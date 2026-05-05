@@ -28,7 +28,7 @@ export async function PATCH(
       );
     }
 
-    const updated = await (prisma[normalizedModel] as any).updateMany({ where, data });
+    const updated = await (prisma as any)[normalizedModel].updateMany({ where, data });
 
     return Response.json(updated);
   } catch (error: any) {

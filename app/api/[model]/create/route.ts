@@ -14,7 +14,7 @@ export async function POST(
   try {
     const body = await req.json();
 
-    const record = await (prisma[normalizedModel] as any).create({
+    const record = await (prisma as any)[normalizedModel].create({
       data: body,
     });
 

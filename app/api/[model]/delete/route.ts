@@ -21,7 +21,7 @@ export async function DELETE(
       );
     }
 
-    const deleted = await (prisma[normalizedModel] as any).deleteMany({ where });
+    const deleted = await (prisma as any)[normalizedModel].deleteMany({ where });
 
     return Response.json(deleted);
   } catch (error: any) {

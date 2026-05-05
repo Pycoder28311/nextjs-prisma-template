@@ -1,20 +1,13 @@
-export const ALLOWED_MODELS = [
-  "user",
-  "account",
-  "session",
-  "verificationToken",
-  "passwordReset",
-  "email",
-  "image",
-  "product",
-] as const;
+import { ALLOWED_MODELS } from "./models";
 
-export type AllowedModel = (typeof ALLOWED_MODELS)[number];
+export { ALLOWED_MODELS };
+
+export type AllowedModel = string;
 
 export function resolveModel(model: string): AllowedModel | Response {
-  const normalized = model.toLowerCase() as AllowedModel;
+  const normalized = model.toLowerCase();
 
-  if (!ALLOWED_MODELS.includes(normalized)) {
+  if (!ALLOWED_MODELS.value.includes(normalized)) {
     return Response.json(
       { error: `Unknown model: ${model}` },
       { status: 400 }

@@ -14,7 +14,7 @@ export async function POST(
   try {
     const { where, select } = await req.json();
 
-    const records = await (prisma[normalizedModel] as any).findMany({
+    const records = await (prisma as any)[normalizedModel].findMany({
       ...(where && { where }),
       ...(select && { select }),
     });
