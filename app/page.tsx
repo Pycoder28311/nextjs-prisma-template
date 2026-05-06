@@ -3,47 +3,47 @@
 import { useEffect, useState } from "react";
 import type { Product } from "@/types";
 import { useApp } from "@/context/AppContext";
-import { createRecord, readRecords } from "@/lib/crud";
+import { createRecord, readRecords, type CrudState } from "@/lib/crud";
+import EditInput from "@/components/EditInput";
 
 export default function UsersPage() {
-  const { user, loading, setLoading } = useApp();
+  const { user } = useApp();
   const [productName, setProductName] = useState("");
-  const [productPrice, setProductPrice] = useState("");
-  const [products, setProducts] = useState<Product[]>([]);
-  const [prismaFields, setPrismaFields] = useState<Record<string, any[]>>({});
-
+  const [productPrice, setProductPrice] = useState<number>(0);
+  const [productsState, setProductsState] = useState<CrudState<Product[]>>({ result: undefined, loading: { model: "product", operation: "read", status: "idle", startedAt: 0, durationMs: null } });
   useEffect(() => {
     readProducts();
-    fetch("/api/prisma-fields")
-      .then((res) => res.json())
-      .then(setPrismaFields);
   }, []);
 
-  console.log(prismaFields)
-
   const readProducts = async () => {
-    await readRecords("product", {}, { id: true, name: true, price: true }, setProducts, undefined, undefined, setLoading);
+    await readRecords<Product>("product", {}, { id: true, name: true, price: true }, (state) => {
+      setProductsState(state);
+    });
   };
 
   const createProduct = async () => {
-    await createRecord(
+    await createRecord<Product>(
       "product",
-      { name: productName, price: parseFloat(productPrice) },
-      setProducts,
-      () => { setProductName(""); setProductPrice(""); },
+      { name: productName, price: productPrice },
+      (state) => {
+        if (state.result) {
+          setProductsState((prev) => ({ ...prev, result: [...(prev.result ?? []), state.result!] }));
+          setProductName("");
+          setProductPrice(0);
+        }
+      },
       () => !!productName && !!productPrice,
-      setLoading
     );
   };
 
+  const { status, operation, model, durationMs } = productsState.loading;
+
   return (
     <div>
-
-      {loading && loading?.status !== "loaded" && (
-        <div>
-          Loading {loading.operation} on <strong>{loading.model}</strong>...
-        </div>
-      )}
+      <div>
+        [{status}] {operation} on <strong>{model}</strong>
+        {durationMs != null && ` — ${durationMs}ms`}
+      </div>
 
       <div>
         <input
@@ -53,7 +53,7 @@ export default function UsersPage() {
         />
         <input
           value={productPrice}
-          onChange={(e) => setProductPrice(e.target.value)}
+          onChange={(e) => setProductPrice(Number(e.target.value))}
           placeholder="Price"
           type="number"
         />
@@ -61,9 +61,10 @@ export default function UsersPage() {
       </div>
 
       <div>
-        {products.map((product) => (
+        {productsState.result?.map((product) => (
           <div key={product.id}>
-            {product.name} — {product.price}
+            <EditInput value={product.name ?? ""} table="product" field="name" id={product.id} />
+            <EditInput value={product.price} table="product" field="price" id={product.id} />
           </div>
         ))}
       </div>

@@ -11,30 +11,32 @@ export type LoadingInfo = {
   status: LoadingStatus;
   startedAt: number;
   durationMs: number | null;
-} | null;
+};
 
 type AppContextType = {
   user: User | null;
   setUser: (user: User | null) => void;
-  loading: LoadingInfo;
-  setLoading: (info: LoadingInfo) => void;
+  prismaFields: Record<string, { name: string; type: string }[]>;
 };
 
 const AppContext = createContext<AppContextType | null>(null);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<LoadingInfo>(null);
+  const [prismaFields, setPrismaFields] = useState<Record<string, { name: string; type: string }[]>>({});
 
   useEffect(() => {
     fetch("/api/session")
       .then((res) => res.json())
       .then((data) => setUser(data?.user ?? null))
       .catch(() => setUser(null));
+    fetch("/api/prisma-fields")
+      .then((res) => res.json())
+      .then(setPrismaFields);
   }, []);
 
   return (
-    <AppContext.Provider value={{ user, setUser, loading, setLoading }}>
+    <AppContext.Provider value={{ user, setUser, prismaFields }}>
       {children}
     </AppContext.Provider>
   );
