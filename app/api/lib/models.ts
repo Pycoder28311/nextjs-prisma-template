@@ -7,7 +7,10 @@ function getAllModels(): string[] {
     throw new Error("DMMF not available yet");
   }
 
-  return dmmf.datamodel.models.map((model: any) => model.name.toLowerCase());
+  return dmmf.datamodel.models.map((model: any) => {
+    const name: string = model.name;
+    return name[0].toLowerCase() + name.slice(1);
+  });
 }
 
 export const ALLOWED_MODELS = {

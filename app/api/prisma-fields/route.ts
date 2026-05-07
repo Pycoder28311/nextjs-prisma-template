@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ALLOWED_MODELS } from "../lib/allowedModels";
+import { ALL } from "dns";
 
 export async function GET() {
   const dmmf = (prisma as any)._dmmf;
+  console.log(dmmf)
 
   if (!dmmf) {
     return NextResponse.json(
@@ -15,6 +17,7 @@ export async function GET() {
   const result: Record<string, any[]> = {};
 
   for (const model of ALLOWED_MODELS.value) {
+    console.log(model)
     const modelKey = model.charAt(0).toUpperCase() + model.slice(1);
     const modelDef = dmmf.datamodel.models.find(
       (m: any) => m.name === modelKey

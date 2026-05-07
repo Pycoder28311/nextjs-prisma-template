@@ -94,3 +94,8 @@ model Product {
   name       String
 }
 
+model ProductTest {
+  id         Int    @id @default(autoincrement())
+  price      Int
+  Barcode       Int
+}

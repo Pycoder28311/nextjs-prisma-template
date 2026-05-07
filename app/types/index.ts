@@ -7,4 +7,5 @@ export type {
   Email,
   Image,
   Product,
+  ProductTest,
 } from "@prisma/client";

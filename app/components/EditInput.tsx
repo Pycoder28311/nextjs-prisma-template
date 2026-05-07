@@ -3,14 +3,18 @@
 import { useState } from "react";
 import { updateRecords, type CrudState } from "@/lib/crud";
 import { useApp } from "@/context/AppContext";
+import CrudButton from "@/components/CrudButton";
 
 export type FieldType = "String" | "Int" | "Float" | "Boolean" | "DateTime" | "Json";
 
 type Props = {
   value: string | number | boolean;
+  updateValue?: (val: string | number | boolean) => void;
+  isEditing?: boolean;
   table: string;
   field: string;
   id: number | string;
+  error?: string;
   onUpdate?: (state: CrudState<any>) => void;
 };
 
@@ -27,27 +31,37 @@ function displayValue(value: string | number | boolean, fieldType: FieldType): s
   return String(value);
 }
 
-export default function EditInput({ value, table, field, id, onUpdate }: Props) {
+const inputClass = "border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full";
+
+export default function EditInput({ value, updateValue, isEditing = true, table, field, id, error, onUpdate }: Props) {
   const { prismaFields } = useApp();
-  const fieldType: FieldType = (prismaFields[table]?.find((f) => f.name === field)?.type as FieldType) ?? "String";
+  const fieldMeta = prismaFields[table]?.find((f) => f.name === field) ?? {};
+  const fieldType: FieldType = (fieldMeta.type as FieldType) ?? "String";
+
+  const { label, placeholder, min, max, options, showInput = true, isRequired } = fieldMeta;
 
   const toEditable = (v: string | number | boolean) =>
     fieldType === "DateTime" ? new Date(v as string).toISOString().slice(0, 16) : (v as string | boolean);
 
   const [saved, setSaved] = useState<string | number | boolean>(value);
   const [current, setCurrent] = useState<string | boolean>(toEditable(value));
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(!isEditing);
   const [saving, setSaving] = useState(false);
 
+  const editValue = isEditing ? current : toEditable(value);
+  const setEditValue = isEditing
+    ? setCurrent
+    : (v: string | boolean) => updateValue?.(coerce(v, fieldType));
+
   const handleSave = async () => {
-    if (current !== toEditable(saved)) {
+    if (editValue !== toEditable(saved)) {
       setSaving(true);
       await updateRecords(
         table,
         { id },
-        { [field]: coerce(current, fieldType) },
+        { [field]: coerce(editValue, fieldType) },
         (state) => {
-          if (state.loading.status === "loaded") setSaved(coerce(current, fieldType));
+          if (state.loading.status === "loaded") setSaved(coerce(editValue, fieldType));
           onUpdate?.(state);
         },
       );
@@ -57,27 +71,58 @@ export default function EditInput({ value, table, field, id, onUpdate }: Props) 
   };
 
   const handleEdit = () => {
-    setCurrent(toEditable(saved));
+    if (isEditing) setCurrent(toEditable(saved));
     setEditing(true);
   };
 
+  const labelEl = label ? (
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      {label}
+      {isRequired && <span className="text-red-500 ml-0.5">*</span>}
+    </label>
+  ) : null;
+
+  const errorEl = error ? (
+    <p className="text-red-500 text-xs mt-1">{error}</p>
+  ) : null;
+
   if (!editing) {
     return (
-      <span>
-        {displayValue(saved, fieldType)}
-        <button onClick={handleEdit}>Edit</button>
+      <span className="inline-flex items-center gap-2">
+        <span className="text-gray-800 text-sm">{displayValue(saved, fieldType)}</span>
+        {isEditing && (
+          <CrudButton type="edit" table={table} onClick={handleEdit} />
+        )}
+        {errorEl}
       </span>
     );
   }
 
+  if (!showInput) return null;
+
   const inputEl = (() => {
+    if (options?.length) {
+      return (
+        <select
+          value={editValue as string}
+          onChange={(e) => setEditValue(e.target.value)}
+          autoFocus
+          className={inputClass}
+        >
+          {options.map((opt: any) => (
+            <option key={String(opt)} value={String(opt)}>{String(opt)}</option>
+          ))}
+        </select>
+      );
+    }
     if (fieldType === "Boolean") {
       return (
         <input
           type="checkbox"
-          checked={current as boolean}
-          onChange={(e) => setCurrent(e.target.checked)}
+          checked={editValue as boolean}
+          onChange={(e) => setEditValue(e.target.checked)}
           autoFocus
+          className="h-4 w-4 text-blue-600 border-gray-300 rounded"
         />
       );
     }
@@ -85,9 +130,10 @@ export default function EditInput({ value, table, field, id, onUpdate }: Props) 
       return (
         <input
           type="datetime-local"
-          value={current as string}
-          onChange={(e) => setCurrent(e.target.value)}
+          value={editValue as string}
+          onChange={(e) => setEditValue(e.target.value)}
           autoFocus
+          className={inputClass}
         />
       );
     }
@@ -96,35 +142,49 @@ export default function EditInput({ value, table, field, id, onUpdate }: Props) 
         <input
           type="number"
           step={fieldType === "Float" ? "any" : "1"}
-          value={current as string}
-          onChange={(e) => setCurrent(e.target.value)}
+          value={editValue as string}
+          onChange={(e) => setEditValue(e.target.value)}
+          placeholder={placeholder}
+          min={min}
+          max={max}
           autoFocus
+          className={inputClass}
         />
       );
     }
     if (fieldType === "Json") {
       return (
         <textarea
-          value={current as string}
-          onChange={(e) => setCurrent(e.target.value)}
+          value={editValue as string}
+          onChange={(e) => setEditValue(e.target.value)}
+          placeholder={placeholder}
           autoFocus
+          className={`${inputClass} resize-y min-h-[80px]`}
         />
       );
     }
     return (
       <input
         type="text"
-        value={current as string}
-        onChange={(e) => setCurrent(e.target.value)}
+        value={editValue as string}
+        onChange={(e) => setEditValue(e.target.value)}
+        placeholder={placeholder}
         autoFocus
+        className={inputClass}
       />
     );
   })();
 
   return (
-    <span>
-      {inputEl}
-      <button onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Save"}</button>
-    </span>
+    <div className="w-full">
+      {labelEl}
+      <div className="flex items-center gap-2">
+        <div className="flex-1">{inputEl}</div>
+        {isEditing && (
+          <CrudButton type="save" table={table} onClick={handleSave} loading={saving} />
+        )}
+      </div>
+      {errorEl}
+    </div>
   );
 }

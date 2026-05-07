@@ -13,6 +13,7 @@ async function request(url: string, method: string, body?: object) {
     headers: { "Content-Type": "application/json" },
     ...(body !== undefined && { body: JSON.stringify(body) }),
   });
+  if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
 
@@ -31,6 +32,7 @@ export async function createRecord<T>(
     setState({ result: undefined, loading: makeLoading(model, "create", startedAt, "idle") });
     return;
   }
+  setState({ result: undefined, loading: makeLoading(model, "create", startedAt, "loading") });
   try {
     const result = await request(`/api/${model}/create`, "POST", data);
     setState({ result, loading: makeLoading(model, "create", startedAt, "loaded") });
@@ -51,6 +53,7 @@ export async function readRecords<T>(
     setState?.({ result: undefined, loading: makeLoading(model, "read", startedAt, "idle") });
     return;
   }
+  setState?.({ result: undefined, loading: makeLoading(model, "read", startedAt, "loading") });
   try {
     const result = await request(`/api/${model}/read`, "POST", { where, select });
     setState?.({ result, loading: makeLoading(model, "read", startedAt, "loaded") });
@@ -71,6 +74,7 @@ export async function updateRecords<T>(
     setState({ result: undefined, loading: makeLoading(model, "update", startedAt, "idle") });
     return;
   }
+  setState({ result: undefined, loading: makeLoading(model, "update", startedAt, "loading") });
   try {
     const result = await request(`/api/${model}/update`, "PATCH", { where, data });
     setState({ result, loading: makeLoading(model, "update", startedAt, "loaded") });
@@ -90,6 +94,7 @@ export async function deleteRecords<T>(
     setState({ result: undefined, loading: makeLoading(model, "delete", startedAt, "idle") });
     return;
   }
+  setState({ result: undefined, loading: makeLoading(model, "delete", startedAt, "loading") });
   try {
     const result = await request(`/api/${model}/delete`, "DELETE", { where });
     setState({ result, loading: makeLoading(model, "delete", startedAt, "loaded") });

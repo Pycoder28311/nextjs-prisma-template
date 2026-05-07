@@ -5,14 +5,16 @@ export { ALLOWED_MODELS };
 export type AllowedModel = string;
 
 export function resolveModel(model: string): AllowedModel | Response {
-  const normalized = model.toLowerCase();
+  const match = ALLOWED_MODELS.value.find(
+    (m) => m.toLowerCase() === model.toLowerCase()
+  );
 
-  if (!ALLOWED_MODELS.value.includes(normalized)) {
+  if (!match) {
     return Response.json(
       { error: `Unknown model: ${model}` },
       { status: 400 }
     );
   }
 
-  return normalized;
+  return match;
 }
