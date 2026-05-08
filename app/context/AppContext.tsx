@@ -15,6 +15,7 @@ export type LoadingInfo = {
 };
 
 type AppContextType = {
+  isMobile: boolean;
   user: User | null;
   setUser: (user: User | null) => void;
   prismaFields: Record<string, any[]>;
@@ -33,6 +34,7 @@ type AppContextType = {
 const AppContext = createContext<AppContextType | null>(null);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
+  const [isMobile, setIsMobile] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [prismaFields, setPrismaFields] = useState<Record<string, any[]>>({});
   const [modalContent, setModalContent] = useState<React.ReactNode>(null);
@@ -81,6 +83,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  useEffect(() => {
     fetch("/api/session")
       .then((res) => res.json())
       .then((data) => setUser(data?.user ?? null))
@@ -95,13 +105,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             ...(fieldConfig[table]?.[f.name] ?? {}),
           }));
         }
-        console.log(merged, data, fieldConfig)
         setPrismaFields(merged);
       });
   }, []);
 
   return (
-    <AppContext.Provider value={{ user, setUser, prismaFields, extendField, openModal, closeModal, tableLoadings, setTableLoading, tableRecords, setTableRecords, updateTableRecords, tableDeletingId, setTableDeletingId }}>
+    <AppContext.Provider value={{ isMobile, user, setUser, prismaFields, extendField, openModal, closeModal, tableLoadings, setTableLoading, tableRecords, setTableRecords, updateTableRecords, tableDeletingId, setTableDeletingId }}>
       {children}
       {modalContent && (
         <div

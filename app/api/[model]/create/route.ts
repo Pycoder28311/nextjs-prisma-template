@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { resolveModel } from "../../lib/allowedModels";
+import { modelHasField } from "../../lib/models";
 
 export async function POST(
   req: NextRequest,
@@ -14,9 +15,23 @@ export async function POST(
   try {
     const body = await req.json();
 
-    const record = await (prisma as any)[normalizedModel].create({
-      data: body,
-    });
+    const table = (prisma as any)[normalizedModel];
+
+    let data = body;
+    if (modelHasField(normalizedModel, "position")) {
+      const agg = await table.aggregate({ _max: { position: true } });
+      data = { ...body, position: (agg._max.position ?? -1) + 1 };
+    }
+
+    const dmmf = (prisma as any)._dmmf;
+    const modelKey = normalizedModel.charAt(0).toUpperCase() + normalizedModel.slice(1);
+    const modelDef = dmmf.datamodel.models.find((m: any) => m.name === modelKey);
+    const objectFields = (modelDef?.fields ?? []).filter((f: any) => f.kind === "object");
+    const include = objectFields.length > 0
+      ? Object.fromEntries(objectFields.map((f: any) => [f.name, true]))
+      : undefined;
+
+    const record = await table.create({ data, ...(include && { include }) });
 
     return Response.json(record, { status: 201 });
   } catch (error: any) {

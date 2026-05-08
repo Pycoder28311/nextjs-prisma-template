@@ -1,3 +1,5 @@
+export const DEFAULT_IGNORED_FIELDS = ["id", "position", "createdAt", "updatedAt"];
+
 const fieldConfig: Record<string, Record<string, Record<string, any>>> = {
   product: {
     name: {
@@ -8,7 +10,16 @@ const fieldConfig: Record<string, Record<string, Record<string, any>>> = {
       label: "Price (€)",
       min: 0,
     },
+    productChild: {
+      label: "Child Product",
+      relationType: "child"
+    },
   },
+};
+
+export const tableConfig: Record<string, { ignoredFields?: string[] }> = {
+  product: {},
+  productChild: {},
 };
 
 export default fieldConfig;

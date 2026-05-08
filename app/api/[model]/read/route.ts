@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { resolveModel } from "../../lib/allowedModels";
+import { modelHasField } from "../../lib/models";
 
 export async function POST(
   req: NextRequest,
@@ -17,6 +18,7 @@ export async function POST(
     const records = await (prisma as any)[normalizedModel].findMany({
       ...(where && { where }),
       ...(select && { select }),
+      ...(modelHasField(normalizedModel, "position") && { orderBy: { position: "asc" } }),
     });
 
     return Response.json(records);

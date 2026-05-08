@@ -18,3 +18,12 @@ export const ALLOWED_MODELS = {
     return getAllModels();
   },
 };
+
+export function modelHasField(modelName: string, fieldName: string): boolean {
+  const dmmf = (prisma as any)._dmmf;
+  if (!dmmf) return false;
+  const model = dmmf.datamodel.models.find(
+    (m: any) => m.name.toLowerCase() === modelName.toLowerCase()
+  );
+  return model?.fields.some((f: any) => f.name === fieldName) ?? false;
+}
