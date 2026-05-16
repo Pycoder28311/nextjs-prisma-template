@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import type { User } from "@/types";
+import type { User } from "@/config/types";
 
 type Props = {
   user: User | null;
@@ -34,9 +34,8 @@ export default function UserMenu({ user }: Props) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label="User menu"
-        className={`flex items-center justify-center w-9 h-9 rounded-full transition-colors ${
-          open ? "bg-gray-200" : "bg-gray-100 hover:bg-gray-200"
-        }`}
+        className={`flex items-center justify-center w-9 h-9 rounded-full transition-colors ${open ? "bg-gray-200" : "bg-gray-100 hover:bg-gray-200"
+          }`}
       >
         {user?.image ? (
           <img src={user.image} alt={user.name ?? "User"} className="w-9 h-9 rounded-full object-cover" />

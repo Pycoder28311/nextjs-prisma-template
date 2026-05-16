@@ -1,10 +1,10 @@
-import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 function getAllModels(): string[] {
-  const dmmf = (prisma as any)._dmmf;
+  const dmmf = Prisma.dmmf;
 
   if (!dmmf) {
-    throw new Error("DMMF not available yet");
+    return [];
   }
 
   return dmmf.datamodel.models.map((model: any) => {
@@ -19,11 +19,22 @@ export const ALLOWED_MODELS = {
   },
 };
 
-export function modelHasField(modelName: string, fieldName: string): boolean {
-  const dmmf = (prisma as any)._dmmf;
+export function modelHasField(
+  modelName: string,
+  fieldName: string
+): boolean {
+  const dmmf = Prisma.dmmf;
+
   if (!dmmf) return false;
+
   const model = dmmf.datamodel.models.find(
-    (m: any) => m.name.toLowerCase() === modelName.toLowerCase()
+    (m: any) =>
+      m.name.toLowerCase() === modelName.toLowerCase()
   );
-  return model?.fields.some((f: any) => f.name === fieldName) ?? false;
+
+  return (
+    model?.fields.some(
+      (f: any) => f.name === fieldName
+    ) ?? false
+  );
 }

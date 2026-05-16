@@ -1,13 +1,14 @@
 "use client";
 
-import type { Product } from "@/types";
+import type { Product } from "@/config/types";
 import EditInput from "@/components/EditInput";
 import CrudButton from "@/components/CrudButton";
-import { useTable } from "@/lib/useTable";
+import { useTable } from "@/utils/useTable";
 
 type Props = {
   product: Product;
 };
+
 
 export default function ProductCard({ product }: Props) {
   const { remove, isDeletingId } = useTable<Product>("product");

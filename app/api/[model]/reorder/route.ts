@@ -28,11 +28,12 @@ export async function PATCH(
 
     const table = (prisma as any)[normalizedModel];
 
-    await prisma.$transaction(
-      ids.map((id: number | string, index: number) =>
-        table.update({ where: { id }, data: { position: index } })
-      )
-    );
+    await prisma.$transaction(async (tx) => {
+      const txTable = (tx as any)[normalizedModel];
+      for (let index = 0; index < ids.length; index++) {
+        await txTable.update({ where: { id: ids[index] }, data: { position: index } });
+      }
+    });
 
     return Response.json({ ok: true });
   } catch (error: any) {

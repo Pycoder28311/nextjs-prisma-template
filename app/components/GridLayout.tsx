@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { flushSync } from "react-dom";
 import { useApp } from "@/context/AppContext";
 import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-pangea/dnd";
 
@@ -63,9 +64,12 @@ export default function GridLayout({ children, title, className = "", layout = "
   const childrenArray = React.Children.toArray(children);
 
   const handleDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-    if (result.source.index === result.destination.index) return;
-    onReorder(result.source.index, result.destination.index);
+    const dest = result.destination;
+    if (!dest) return;
+    if (result.source.index === dest.index) return;
+    flushSync(() => {
+      onReorder(result.source.index, dest.index);
+    });
   };
 
   // Strip gap from the container and apply as margin on each item so the
@@ -95,16 +99,11 @@ export default function GridLayout({ children, title, className = "", layout = "
                     <div
                       ref={provided.innerRef}
                       {...provided.draggableProps}
+                      {...provided.dragHandleProps}
                       style={provided.draggableProps.style}
-                      className={`flex items-center gap-2 group ${itemSpacing}`}
+                      className={`cursor-grab active:cursor-grabbing ${itemSpacing}`}
                     >
-                      <span
-                        {...provided.dragHandleProps}
-                        className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity select-none px-1"
-                      >
-                        ⠿
-                      </span>
-                      <div className="flex-1">{child}</div>
+                      {child}
                     </div>
                   )}
                 </Draggable>

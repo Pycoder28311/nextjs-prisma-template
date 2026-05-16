@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { readRecords, deleteRecords, updateRecords, type CrudState } from "./crud";
+import { readRecords, deleteRecords, updateRecords, type CrudState } from "../utils/crud";
 import { useApp, type LoadingInfo } from "@/context/AppContext";
 
 type WithId = { id: number | string };

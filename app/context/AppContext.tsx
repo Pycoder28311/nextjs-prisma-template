@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import type { User } from "@/types";
+import type { User } from "@/config/types";
 import fieldConfig from "@/config/fieldConfig";
 
 export type LoadingStatus = "idle" | "loading" | "loaded" | "failed";

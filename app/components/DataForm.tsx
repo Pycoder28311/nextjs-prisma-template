@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createRecord, readRecords, type CrudState } from "@/lib/crud";
+import { createRecord, readRecords, type CrudState } from "@/utils/crud";
 import EditInput from "@/components/EditInput";
 import CrudButton from "@/components/CrudButton";
 import { useApp } from "@/context/AppContext";
