@@ -36,6 +36,7 @@ export default function RootLayout({
           attribute="class"
           defaultTheme="system"
           enableSystem
+          themes={["system", "light", "dark", "ocean", "forest", "sunset"]}
         >
           <AppProvider>
             <AppShell>{children}</AppShell>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { useApp } from "@/context/AppContext";
@@ -19,6 +19,15 @@ type NavLink = {
   megaMenu?: ReactNode;
 };
 
+const THEMES = [
+  { value: "system", label: "System", color: "#888888" },
+  { value: "light",  label: "Light",  color: "#ffffff" },
+  { value: "dark",   label: "Dark",   color: "#0a0a0a" },
+  { value: "ocean",  label: "Ocean",  color: "#0a1628" },
+  { value: "forest", label: "Forest", color: "#0a1a0a" },
+  { value: "sunset", label: "Sunset", color: "#1a0a00" },
+];
+
 const navLinks: NavLink[] = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About", megaMenu: <AboutMegaMenu /> },
@@ -31,9 +40,21 @@ export default function Navbar() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userSidebarOpen, setUserSidebarOpen] = useState(false);
-  const { resolvedTheme, setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [themeDropdownOpen, setThemeDropdownOpen] = useState(false);
+  const themeButtonRef = useRef<HTMLDivElement>(null);
   useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    if (!themeDropdownOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (themeButtonRef.current && !themeButtonRef.current.contains(e.target as Node)) {
+        setThemeDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [themeDropdownOpen]);
 
   const activeMegaMenu = activeMenu
     ? navLinks.find((l) => l.label === activeMenu)?.megaMenu
@@ -88,22 +109,41 @@ export default function Navbar() {
               onMouseEnter={() => setActiveMenu(null)}
             >
               {mounted && (
-                <button
-                  type="button"
-                  onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-                  className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-                  aria-label="Toggle theme"
-                >
-                  {resolvedTheme === "dark" ? (
+                <div ref={themeButtonRef} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setThemeDropdownOpen((v) => !v)}
+                    className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                    aria-label="Change theme"
+                  >
                     <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
                     </svg>
-                  ) : (
-                    <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                    </svg>
+                  </button>
+                  {themeDropdownOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-40 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-50">
+                      {THEMES.map((t) => (
+                        <button
+                          key={t.value}
+                          type="button"
+                          onClick={() => { setTheme(t.value); setThemeDropdownOpen(false); }}
+                          className={`flex items-center gap-2.5 w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${theme === t.value ? "font-medium text-gray-900" : "text-gray-600"}`}
+                        >
+                          <span
+                            className="w-4 h-4 rounded-full border border-gray-300 flex-shrink-0"
+                            style={{ backgroundColor: t.color }}
+                          />
+                          {t.label}
+                          {theme === t.value && (
+                            <svg className="w-3.5 h-3.5 ml-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </button>
+                      ))}
+                    </div>
                   )}
-                </button>
+                </div>
               )}
               <NavSearch iconMode />
               <UserMenu user={user} />
@@ -155,6 +195,23 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            {mounted && (
+              <div className="pt-3 mt-2 border-t border-gray-100">
+                <p className="text-xs text-gray-400 px-3 mb-2">Theme</p>
+                <div className="flex gap-2 px-3">
+                  {THEMES.map((t) => (
+                    <button
+                      key={t.value}
+                      type="button"
+                      title={t.label}
+                      onClick={() => setTheme(t.value)}
+                      className={`w-6 h-6 rounded-full border-2 transition-all ${theme === t.value ? "border-gray-500 scale-110" : "border-gray-200"}`}
+                      style={{ backgroundColor: t.color }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="pt-3 mt-2 border-t border-gray-100">
               {user ? (
                 <span className="text-sm font-medium text-gray-700 px-3">{user.name ?? user.email}</span>
