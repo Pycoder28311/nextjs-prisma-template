@@ -12,7 +12,7 @@ const fieldConfig: Record<string, Record<string, Record<string, any>>> = {
     },
     productChild: {
       label: "Child Product",
-      relationType: "child"
+      relationType: "child",
     },
   },
   manyOne: {
@@ -20,16 +20,32 @@ const fieldConfig: Record<string, Record<string, Record<string, any>>> = {
       label: "Name",
     },
     ManyTwos: {
-      relationType: "manyToMany"
-    }
+      relationType: "manyToMany",
+    },
   },
   manyTwo: {
     tiele: {
       label: "Title",
     },
     ManyOnes: {
-      relationType: "manyToMany"
-    }
+      relationType: "manyToMany",
+    },
+  },
+  user: {
+    accounts: {
+      relationType: "child",
+    },
+    sessions: {
+      relationType: "child",
+    },
+    passwordResets: {
+      relationType: "child",
+    },
+  },
+  testTable: {
+    productChildTest: {
+      relationType: "child",
+    },
   },
 };
 

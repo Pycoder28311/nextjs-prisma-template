@@ -224,7 +224,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen p-8">
-      {/*<ShaderBackground />*/}
       <div className="max-w-2xl mx-auto flex flex-col gap-8">
         <AbsoluteModalExamples />
 
