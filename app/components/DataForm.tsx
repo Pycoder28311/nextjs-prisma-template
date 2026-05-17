@@ -4,9 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { createRecord, readRecords, type CrudState } from "@/utils/crud";
 import EditInput from "@/components/EditInput";
 import CrudButton from "@/components/CrudButton";
-import { useApp } from "@/context/AppContext";
+import { useApp, useAbsoluteModal } from "@/context/AppContext";
 import { tableConfig, DEFAULT_IGNORED_FIELDS } from "@/config/fieldConfig";
-import CustomSelect from "@/components/CustomSelect";
 
 function FkSelect({
   field,
@@ -22,6 +21,7 @@ function FkSelect({
   onChange: (v: string | number | boolean) => void;
 }) {
   const { tableRecords, tableLoadings, setTableLoading, setTableRecords, prismaFields } = useApp();
+  const modal = useAbsoluteModal();
 
   useEffect(() => {
     const status = tableLoadings[parentKey]?.status;
@@ -37,18 +37,65 @@ function FkSelect({
   const labelField =
     parentFields.find((f) => f.kind === "scalar" && f.name !== "id" && f.type === "String")?.name ?? "id";
 
-  const selected = value && value !== 0 ? [value as string | number] : [];
   const options = records.map((r) => ({ value: r.id as string | number, label: String(r[labelField] ?? r.id) }));
+  const selectedLabel =
+    value && value !== 0 ? options.find((o) => o.value === value)?.label : undefined;
+  const placeholder = `Select ${label ?? field}...`;
+
+  const openDropdown = () => {
+    modal.toggle({
+      matchAnchorWidth: true,
+      component: (
+        <div className="max-h-52 overflow-auto">
+          {options.length === 0 ? (
+            <p className="px-3 py-2 text-sm text-gray-400 italic">No options available</p>
+          ) : (
+            options.map((opt) => {
+              const isSelected = opt.value === value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => {
+                    onChange(opt.value);
+                    modal.close();
+                  }}
+                  className={`w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${
+                    isSelected ? "bg-blue-50 text-blue-700" : "text-gray-700"
+                  }`}
+                >
+                  <span className="truncate">{opt.label}</span>
+                </button>
+              );
+            })
+          )}
+        </div>
+      ),
+    });
+  };
 
   return (
-    <CustomSelect
-      options={options}
-      selected={selected}
-      onChange={(sel) => onChange(sel[0] ?? 0)}
-      max={1}
-      label={label ?? field}
-      placeholder={`Select ${label ?? field}...`}
-    />
+    <div className="flex flex-col gap-1">
+      <label className="text-sm font-medium text-gray-600">{label ?? field}</label>
+      <button
+        {...modal.triggerProps}
+        type="button"
+        onClick={openDropdown}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-left flex items-center justify-between bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+      >
+        <span className={selectedLabel ? "text-gray-800" : "text-gray-400"}>
+          {selectedLabel ?? placeholder}
+        </span>
+        <svg
+          className="w-4 h-4 text-gray-400 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+    </div>
   );
 }
 

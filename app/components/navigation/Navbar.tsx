@@ -12,6 +12,7 @@ import RightSidebar from "@/components/navigation/RightSidebar";
 import UserMenu from "@/components/navigation/UserMenu";
 import UserSidebar from "@/components/navigation/UserSidebar";
 import { useTheme } from "next-themes";
+import { useAbsoluteModal } from "@/context/AppContext";
 
 type NavLink = {
   href: string;
@@ -21,9 +22,9 @@ type NavLink = {
 
 const THEMES = [
   { value: "system", label: "System", color: "#888888" },
-  { value: "light",  label: "Light",  color: "#ffffff" },
-  { value: "dark",   label: "Dark",   color: "#0a0a0a" },
-  { value: "ocean",  label: "Ocean",  color: "#0a1628" },
+  { value: "light", label: "Light", color: "#ffffff" },
+  { value: "dark", label: "Dark", color: "#0a0a0a" },
+  { value: "ocean", label: "Ocean", color: "#0a1628" },
   { value: "forest", label: "Forest", color: "#0a1a0a" },
   { value: "sunset", label: "Sunset", color: "#1a0a00" },
 ];
@@ -56,10 +57,7 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handler);
   }, [themeDropdownOpen]);
 
-  const activeMegaMenu = activeMenu
-    ? navLinks.find((l) => l.label === activeMenu)?.megaMenu
-    : undefined;
-
+  const hoverModal = useAbsoluteModal();
   return (
     <>
       <nav
@@ -77,15 +75,23 @@ export default function Navbar() {
             </div>
 
             {/* Desktop nav */}
-            <div className="hidden md:flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-6 h-full">
               {navLinks.map((link) => (
-                <div
+                <button
+                  {...hoverModal.triggerProps}
+                  className="h-full"
                   key={link.href}
-                  onMouseEnter={() => setActiveMenu(link.megaMenu ? link.label : null)}
+                  onMouseEnter={() => hoverModal.open({
+                    side: "bottom",
+                    align: "center",
+                    offset: 0,
+                    closeOnLeave: true,
+                    component: link.megaMenu,
+                  })}
                 >
                   <Link
                     href={link.href}
-                    className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                    className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 transition-colors h-full"
                   >
                     {link.label}
                     {link.megaMenu && (
@@ -99,7 +105,7 @@ export default function Navbar() {
                       </svg>
                     )}
                   </Link>
-                </div>
+                </button>
               ))}
             </div>
 
@@ -169,15 +175,6 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-
-        {/* Megamenu panel */}
-        {activeMegaMenu && (
-          <div className="absolute left-0 top-full w-full bg-white border-t border-gray-100 shadow-lg z-40">
-            <div className="max-w-6xl mx-auto px-4 py-6">
-              {activeMegaMenu}
-            </div>
-          </div>
-        )}
 
         {/* Mobile menu */}
         {menuOpen && (

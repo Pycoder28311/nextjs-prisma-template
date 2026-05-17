@@ -4,12 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "db:sync": "prisma migrate dev --name auto && prisma generate && npm run gen:types",
-    "gen:types": "npx tsx app/lib/scripts/generateTypes.ts",
-    "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "git:push": "git add . && git commit -m \"auto commit\" && git push origin main"
+
+    "build": "next build",
+    "git-push": "git add . && git commit -m \"auto commit\" && git push origin main",
+    "git": "npm run build && npm run git-push",
+
+    "prisma-sync": "npx tsx app/lib/scripts/generateTypes.ts",
+    "prisma-migrate": "prisma migrate dev --name auto",
+    "prisma": "prisma migrate dev --name auto && prisma generate && npm run prisma-sync"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
