@@ -34,9 +34,14 @@ function resolveGrid(layout: Layout): React.CSSProperties & { className: string 
 }
 
 export default function GridLayout({ children, title, className = "", layout = "one-column", table, onReorder }: Props) {
-  const { tableLoadings } = useApp();
+  const { tableLoadings, prismaFields } = useApp();
   const { className: gridClass, ...gridStyle } = resolveGrid(layout);
   const tableLoading = table ? tableLoadings[table] : undefined;
+
+  const hasPositionField = table
+    ? (prismaFields[table] ?? []).some((f) => f.name === "position")
+    : true;
+  const canReorder = !!onReorder && hasPositionField;
 
   const header = (
     <div className="flex items-center gap-3 mb-3">
@@ -50,25 +55,27 @@ export default function GridLayout({ children, title, className = "", layout = "
     </div>
   );
 
-  if (!onReorder) {
+  const childrenArray = React.Children.toArray(children);
+
+  if (!canReorder) {
     return (
       <div className={className}>
         {header}
         <div className={gridClass} style={gridStyle}>
-          {children}
+          {childrenArray.map((child, index) => (
+            <React.Fragment key={index}>{child}</React.Fragment>
+          ))}
         </div>
       </div>
     );
   }
-
-  const childrenArray = React.Children.toArray(children);
 
   const handleDragEnd = (result: DropResult) => {
     const dest = result.destination;
     if (!dest) return;
     if (result.source.index === dest.index) return;
     flushSync(() => {
-      onReorder(result.source.index, dest.index);
+      onReorder!(result.source.index, dest.index);
     });
   };
 

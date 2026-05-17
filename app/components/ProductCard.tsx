@@ -11,11 +11,11 @@ type Props = {
 
 
 export default function ProductCard({ product }: Props) {
-  const { remove, isDeletingId } = useTable<Product>("product");
+  const { remove, isDeletingId, update } = useTable<Product>("product");
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm px-5 py-3 flex items-center gap-6">
-      <EditInput value={product.name ?? ""} table="product" field="name" id={product.id} />
-      <EditInput value={product.price} table="product" field="price" id={product.id} />
+      <EditInput value={product.name ?? ""} table="product" field="name" id={product.id} update={(data) => update(product.id, data)} />
+      <EditInput value={product.price} table="product" field="price" id={product.id} update={(data) => update(product.id, data)} />
       <CrudButton
         type="delete"
         table="product"

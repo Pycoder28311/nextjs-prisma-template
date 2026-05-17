@@ -7,7 +7,15 @@ const globalForPrisma = global as unknown as {
 };
 
 function createPrismaClient() {
-  const client = new PrismaClient({ log: ["error"] });
+  const client = new PrismaClient({
+    log: [{ emit: "event", level: "error" }],
+  });
+
+  // Suppress the stale-connection error log; the retry middleware below recovers from it.
+  client.$on("error" as never, (e: { message?: string }) => {
+    if (typeof e?.message === "string" && e.message.includes("Server has closed the connection")) return;
+    console.error(e);
+  });
 
   // Retry once when the DB has dropped the idle connection (Railway/MySQL wait_timeout).
   client.$use(async (params, next) => {

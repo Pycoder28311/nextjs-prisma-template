@@ -15,6 +15,22 @@ const fieldConfig: Record<string, Record<string, Record<string, any>>> = {
       relationType: "child"
     },
   },
+  manyOne: {
+    name: {
+      label: "Name",
+    },
+    ManyTwos: {
+      relationType: "manyToMany"
+    }
+  },
+  manyTwo: {
+    tiele: {
+      label: "Title",
+    },
+    ManyOnes: {
+      relationType: "manyToMany"
+    }
+  },
 };
 
 export const tableConfig: Record<string, { ignoredFields?: string[] }> = {

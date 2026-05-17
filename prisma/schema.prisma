@@ -112,3 +112,15 @@ model TestTable {
   address    String
   position   Int
 }
+
+model ManyOne {
+  id     Int     @id @default(autoincrement())
+  name   String
+  ManyTwos  ManyTwo[]
+}
+
+model ManyTwo {
+  id     Int     @id @default(autoincrement())
+  title  String
+  ManyOnes  ManyOne[]
+}

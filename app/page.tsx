@@ -1,6 +1,6 @@
 "use client";
 
-import type { Product, ProductChild, TestTable } from "@/config/types";
+import type { Product, ProductChild, ManyOne, ManyTwo } from "@/config/types";
 import { useTable } from "@/utils/useTable";
 import { useAbsoluteModal } from "@/context/AppContext";
 import DataForm from "@/components/DataForm";
@@ -8,7 +8,6 @@ import GridLayout from "@/components/GridLayout";
 import ProductCard from "@/components/ProductCard";
 import CrudButton from "@/components/CrudButton";
 import EditInput from "@/components/EditInput";
-import ShaderBackground from "@/components/ui/shader-background";
 
 function AbsoluteModalExamples() {
   const belowModal = useAbsoluteModal();
@@ -134,9 +133,146 @@ function AbsoluteModalExamples() {
   );
 }
 
+function RelationLinker({
+  table,
+  id,
+  relationField,
+  otherTable,
+  renderLabel,
+  emptyMessage = "No records",
+}: {
+  table: string;
+  id: number | string;
+  relationField: string;
+  otherTable: string;
+  renderLabel: (item: any) => React.ReactNode;
+  emptyMessage?: string;
+}) {
+  const sourceData = useTable<{ id: number | string } & Record<string, any>>(table);
+  const otherData = useTable<{ id: number | string } & Record<string, any>>(otherTable);
+
+  const sourceRecord = sourceData.records.find((r) => r.id === id);
+  const linkedIds = new Set<number | string>(
+    (((sourceRecord?.[relationField]) ?? []) as { id: number | string }[]).map((m) => m.id)
+  );
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-lg shadow-md min-w-[200px]">
+      <ul className="py-1 text-sm text-gray-700 max-h-60 overflow-y-auto">
+        {otherData.records.length === 0 && (
+          <li className="px-3 py-1.5 text-gray-400">{emptyMessage}</li>
+        )}
+        {otherData.records.map((item) => {
+          const linked = linkedIds.has(item.id);
+          return (
+            <li key={item.id} className="flex items-center justify-between gap-3 px-3 py-1.5">
+              <span className="truncate">{renderLabel(item)}</span>
+              <button
+                type="button"
+                onClick={() =>
+                  linked
+                    ? sourceData.disconnect(relationField, id, item.id)
+                    : sourceData.connect(relationField, id, item.id)
+                }
+                className={`text-xs px-2 py-1 rounded ${linked ? "bg-rose-100 text-rose-700 hover:bg-rose-200" : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"}`}
+              >
+                {linked ? "Unlink" : "Link"}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+function ManyTwoRow({ manyTwo }: { manyTwo: ManyTwo }) {
+  const manyTwoData = useTable<ManyTwo>("manyTwo");
+  const linkModal = useAbsoluteModal();
+  const linkedCount = ((manyTwo as ManyTwo & { ManyOnes?: ManyOne[] }).ManyOnes ?? []).length;
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl shadow-sm px-5 py-3 flex items-center gap-6">
+      <EditInput value={manyTwo.title ?? ""} table="manyTwo" field="title" id={manyTwo.id} update={(data) => manyTwoData.update(manyTwo.id, data)} />
+      <button
+        {...linkModal.triggerProps}
+        type="button"
+        onClick={() =>
+          linkModal.toggle({
+            side: "bottom",
+            align: "end",
+            component: (
+              <RelationLinker
+                table="manyTwo"
+                otherTable="manyOne"
+                id={manyTwo.id}
+                relationField="ManyOnes"
+                renderLabel={(item: ManyOne) => item.name}
+                emptyMessage="No Many One records"
+              />
+            ),
+          })
+        }
+        className="text-xs px-2 py-1 rounded bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
+      >
+        Links ({linkedCount})
+      </button>
+      <CrudButton
+        type="delete"
+        table="manyTwo"
+        loading={manyTwoData.isDeletingId(manyTwo.id)}
+        onClick={() => manyTwoData.remove(manyTwo.id)}
+      />
+    </div>
+  );
+}
+
+function ManyOneRow({ manyOne }: { manyOne: ManyOne }) {
+  const manyOneData = useTable<ManyOne>("manyOne");
+  const linkModal = useAbsoluteModal();
+  const linkedCount = ((manyOne as ManyOne & { ManyTwos?: ManyTwo[] }).ManyTwos ?? []).length;
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl shadow-sm px-5 py-3 flex items-center gap-6">
+      <EditInput value={manyOne.name ?? ""} table="manyOne" field="name" id={manyOne.id} update={(data) => manyOneData.update(manyOne.id, data)} />
+      <button
+        {...linkModal.triggerProps}
+        type="button"
+        onClick={() =>
+          linkModal.toggle({
+            side: "bottom",
+            align: "end",
+            component: (
+              <RelationLinker
+                table="manyOne"
+                otherTable="manyTwo"
+                id={manyOne.id}
+                relationField="ManyTwos"
+                renderLabel={(item: ManyTwo) => item.title}
+                emptyMessage="No Many Two records"
+              />
+            ),
+          })
+        }
+        className="text-xs px-2 py-1 rounded bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
+      >
+        Links ({linkedCount})
+      </button>
+      <CrudButton
+        type="delete"
+        table="manyOne"
+        loading={manyOneData.isDeletingId(manyOne.id)}
+        onClick={() => manyOneData.remove(manyOne.id)}
+      />
+    </div>
+  );
+}
+
 export default function HomePage() {
   const productData = useTable<Product>("product");
   const productChildData = useTable<ProductChild>("productChild");
+  const manyOneData = useTable<ManyOne>("manyOne");
+  const manyTwoData = useTable<ManyTwo>("manyTwo");
 
   return (
     <div className="min-h-screen p-8">
@@ -165,7 +301,7 @@ export default function HomePage() {
         <GridLayout title="Product Children" layout="one-column" table="productChild" onReorder={productChildData.reorder}>
           {productChildData.records.map((productChild) => (
             <div className="bg-white border border-gray-200 rounded-xl shadow-sm px-5 py-3 flex items-center gap-6">
-              <EditInput value={productChild.name ?? ""} table="productChild" field="name" id={productChild.id} />
+              <EditInput value={productChild.name ?? ""} table="productChild" field="name" id={productChild.id} update={(data) => productChildData.update(productChild.id, data)} />
               <CrudButton
                 type="delete"
                 table="productChild"
@@ -173,6 +309,32 @@ export default function HomePage() {
                 onClick={() => productChildData.remove(productChild.id)}
               />
             </div>
+          ))}
+        </GridLayout>
+      </div>
+
+      <div className="max-w-2xl mx-auto flex flex-col gap-8">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-700 mb-3">New Many One</h2>
+          <DataForm table="manyOne" onSuccess={manyOneData.append} />
+        </div>
+
+        <GridLayout title="Many Ones" layout="one-column" table="manyOne" onReorder={manyOneData.reorder}>
+          {manyOneData.records.map((manyOne) => (
+            <ManyOneRow key={manyOne.id} manyOne={manyOne} />
+          ))}
+        </GridLayout>
+      </div>
+
+      <div className="max-w-2xl mx-auto flex flex-col gap-8">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-700 mb-3">New Many Two</h2>
+          <DataForm table="manyTwo" onSuccess={manyTwoData.append} />
+        </div>
+
+        <GridLayout title="Many Twos" layout="one-column" table="manyTwo" onReorder={manyTwoData.reorder}>
+          {manyTwoData.records.map((manyTwo) => (
+            <ManyTwoRow key={manyTwo.id} manyTwo={manyTwo} />
           ))}
         </GridLayout>
       </div>

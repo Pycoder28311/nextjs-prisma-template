@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { updateRecords, type CrudState } from "@/utils/crud";
 import { useApp } from "@/context/AppContext";
 import CrudButton from "@/components/CrudButton";
 
@@ -15,7 +14,7 @@ type Props = {
   field: string;
   id: number | string;
   error?: string;
-  onUpdate?: (state: CrudState<any>) => void;
+  update?: (data: object) => Promise<void>;
 };
 
 function coerce(raw: string | boolean, fieldType: FieldType): string | number | boolean {
@@ -33,7 +32,7 @@ function displayValue(value: string | number | boolean, fieldType: FieldType): s
 
 const inputClass = "border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full";
 
-export default function EditInput({ value, updateValue, isEditing = true, table, field, id, error, onUpdate }: Props) {
+export default function EditInput({ value, updateValue, isEditing = true, table, field, error, update }: Props) {
   const { prismaFields } = useApp();
   const fieldMeta = prismaFields[table]?.find((f) => f.name === field) ?? {};
   const fieldType: FieldType = (fieldMeta.type as FieldType) ?? "String";
@@ -55,16 +54,10 @@ export default function EditInput({ value, updateValue, isEditing = true, table,
 
   const handleSave = async () => {
     if (editValue !== toEditable(saved)) {
+      const newValue = coerce(editValue, fieldType);
       setSaving(true);
-      await updateRecords(
-        table,
-        { id },
-        { [field]: coerce(editValue, fieldType) },
-        (state) => {
-          if (state.loading.status === "loaded") setSaved(coerce(editValue, fieldType));
-          onUpdate?.(state);
-        },
-      );
+      await update?.({ [field]: newValue });
+      setSaved(newValue);
       setSaving(false);
     }
     setEditing(false);

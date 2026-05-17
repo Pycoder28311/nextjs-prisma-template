@@ -8,5 +8,7 @@ export type {
   Image,
   Product,
   ProductChild,
-  TestTable
+  TestTable,
+  ManyOne,
+  ManyTwo
 } from "@prisma/client";
