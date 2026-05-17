@@ -26,10 +26,23 @@ body {
   background-color: oklch(0.60 0.16 260 / 0.22);
 }
 
-::-webkit-scrollbar { width: 7px; height: 7px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: oklch(0.82 0.012 260); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: oklch(0.70 0.016 260); }
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(0.82 0.012 260);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.70 0.016 260);
+}
 
 
 /* ── Dark ─────────────────────────────────────────────────── */
@@ -38,8 +51,8 @@ body {
   --background: oklch(0.10 0.018 264);
   --foreground: oklch(0.96 0.005 264);
 
-  --color-white:    oklch(0.13 0.022 264);
-  --color-gray-50:  oklch(0.13 0.022 264);
+  --color-white: oklch(0.13 0.022 264);
+  --color-gray-50: oklch(0.13 0.022 264);
   --color-gray-100: oklch(0.19 0.028 264);
   --color-gray-200: oklch(0.26 0.032 261);
   --color-gray-300: oklch(0.35 0.030 260);
@@ -57,18 +70,27 @@ body {
 
 .dark body {
   background-color: oklch(0.10 0.018 264);
-  background-image: radial-gradient(
-    ellipse 80% 40% at 50% -5%,
-    oklch(0.17 0.055 258 / 0.7) 0%,
-    transparent 100%
-  );
+  background-image: radial-gradient(ellipse 80% 40% at 50% -5%,
+      oklch(0.17 0.055 258 / 0.7) 0%,
+      transparent 100%);
 }
 
-.dark ::selection { background-color: oklch(0.56 0.20 264 / 0.40); }
+.dark ::selection {
+  background-color: oklch(0.56 0.20 264 / 0.40);
+}
 
-.dark ::-webkit-scrollbar-track { background: oklch(0.13 0.022 264); }
-.dark ::-webkit-scrollbar-thumb { background: oklch(0.28 0.022 264); border-radius: 99px; }
-.dark ::-webkit-scrollbar-thumb:hover { background: oklch(0.38 0.028 264); }
+.dark ::-webkit-scrollbar-track {
+  background: oklch(0.13 0.022 264);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: oklch(0.28 0.022 264);
+  border-radius: 99px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.38 0.028 264);
+}
 
 
 /* ── Ocean ────────────────────────────────────────────────── */
@@ -77,8 +99,8 @@ body {
   --background: oklch(0.11 0.048 232);
   --foreground: oklch(0.95 0.024 214);
 
-  --color-white:    oklch(0.15 0.052 234);
-  --color-gray-50:  oklch(0.15 0.052 234);
+  --color-white: oklch(0.15 0.052 234);
+  --color-gray-50: oklch(0.15 0.052 234);
   --color-gray-100: oklch(0.20 0.060 231);
   --color-gray-200: oklch(0.27 0.068 228);
   --color-gray-300: oklch(0.36 0.078 225);
@@ -97,16 +119,12 @@ body {
 .ocean body {
   background-color: oklch(0.11 0.048 232);
   background-image:
-    radial-gradient(
-      ellipse 60% 50% at 90% -5%,
+    radial-gradient(ellipse 60% 50% at 90% -5%,
       oklch(0.22 0.14 205 / 0.65) 0%,
-      transparent 100%
-    ),
-    radial-gradient(
-      ellipse 50% 40% at 10% 105%,
+      transparent 100%),
+    radial-gradient(ellipse 50% 40% at 10% 105%,
       oklch(0.15 0.08 248 / 0.55) 0%,
-      transparent 100%
-    );
+      transparent 100%);
 }
 
 .ocean ::selection {
@@ -114,9 +132,18 @@ body {
   color: oklch(0.97 0.018 213);
 }
 
-.ocean ::-webkit-scrollbar-track { background: oklch(0.15 0.052 234); }
-.ocean ::-webkit-scrollbar-thumb { background: oklch(0.36 0.078 225); border-radius: 99px; }
-.ocean ::-webkit-scrollbar-thumb:hover { background: oklch(0.46 0.086 222); }
+.ocean ::-webkit-scrollbar-track {
+  background: oklch(0.15 0.052 234);
+}
+
+.ocean ::-webkit-scrollbar-thumb {
+  background: oklch(0.36 0.078 225);
+  border-radius: 99px;
+}
+
+.ocean ::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.46 0.086 222);
+}
 
 
 /* ── Forest ───────────────────────────────────────────────── */
@@ -125,8 +152,8 @@ body {
   --background: oklch(0.11 0.042 148);
   --foreground: oklch(0.95 0.022 144);
 
-  --color-white:    oklch(0.14 0.045 150);
-  --color-gray-50:  oklch(0.14 0.045 150);
+  --color-white: oklch(0.14 0.045 150);
+  --color-gray-50: oklch(0.14 0.045 150);
   --color-gray-100: oklch(0.19 0.054 148);
   --color-gray-200: oklch(0.26 0.062 146);
   --color-gray-300: oklch(0.35 0.072 144);
@@ -145,16 +172,12 @@ body {
 .forest body {
   background-color: oklch(0.11 0.042 148);
   background-image:
-    radial-gradient(
-      ellipse 55% 45% at 15% -5%,
+    radial-gradient(ellipse 55% 45% at 15% -5%,
       oklch(0.18 0.10 128 / 0.65) 0%,
-      transparent 100%
-    ),
-    radial-gradient(
-      ellipse 45% 40% at 85% 110%,
+      transparent 100%),
+    radial-gradient(ellipse 45% 40% at 85% 110%,
       oklch(0.14 0.065 162 / 0.55) 0%,
-      transparent 100%
-    );
+      transparent 100%);
 }
 
 .forest ::selection {
@@ -162,9 +185,18 @@ body {
   color: oklch(0.97 0.018 147);
 }
 
-.forest ::-webkit-scrollbar-track { background: oklch(0.14 0.045 150); }
-.forest ::-webkit-scrollbar-thumb { background: oklch(0.35 0.072 144); border-radius: 99px; }
-.forest ::-webkit-scrollbar-thumb:hover { background: oklch(0.45 0.080 142); }
+.forest ::-webkit-scrollbar-track {
+  background: oklch(0.14 0.045 150);
+}
+
+.forest ::-webkit-scrollbar-thumb {
+  background: oklch(0.35 0.072 144);
+  border-radius: 99px;
+}
+
+.forest ::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.45 0.080 142);
+}
 
 
 /* ── Sunset ───────────────────────────────────────────────── */
@@ -173,8 +205,8 @@ body {
   --background: oklch(0.11 0.040 34);
   --foreground: oklch(0.95 0.022 52);
 
-  --color-white:    oklch(0.15 0.044 37);
-  --color-gray-50:  oklch(0.15 0.044 37);
+  --color-white: oklch(0.15 0.044 37);
+  --color-gray-50: oklch(0.15 0.044 37);
   --color-gray-100: oklch(0.20 0.052 39);
   --color-gray-200: oklch(0.27 0.062 41);
   --color-gray-300: oklch(0.36 0.074 43);
@@ -193,16 +225,12 @@ body {
 .sunset body {
   background-color: oklch(0.11 0.040 34);
   background-image:
-    radial-gradient(
-      ellipse 65% 50% at 100% -5%,
+    radial-gradient(ellipse 65% 50% at 100% -5%,
       oklch(0.20 0.14 26 / 0.70) 0%,
-      transparent 100%
-    ),
-    radial-gradient(
-      ellipse 40% 35% at 0% 100%,
+      transparent 100%),
+    radial-gradient(ellipse 40% 35% at 0% 100%,
       oklch(0.14 0.058 52 / 0.50) 0%,
-      transparent 100%
-    );
+      transparent 100%);
 }
 
 .sunset ::selection {
@@ -210,6 +238,15 @@ body {
   color: oklch(0.97 0.018 46);
 }
 
-.sunset ::-webkit-scrollbar-track { background: oklch(0.15 0.044 37); }
-.sunset ::-webkit-scrollbar-thumb { background: oklch(0.36 0.074 43); border-radius: 99px; }
-.sunset ::-webkit-scrollbar-thumb:hover { background: oklch(0.46 0.084 45); }
+.sunset ::-webkit-scrollbar-track {
+  background: oklch(0.15 0.044 37);
+}
+
+.sunset ::-webkit-scrollbar-thumb {
+  background: oklch(0.36 0.074 43);
+  border-radius: 99px;
+}
+
+.sunset ::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.46 0.084 45);
+}
