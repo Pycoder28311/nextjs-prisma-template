@@ -42,11 +42,6 @@ const fieldConfig: Record<string, Record<string, Record<string, any>>> = {
       relationType: "child",
     },
   },
-  testTable: {
-    productChildTest: {
-      relationType: "child",
-    },
-  },
 };
 
 export const tableConfig: Record<string, { ignoredFields?: string[] }> = {
