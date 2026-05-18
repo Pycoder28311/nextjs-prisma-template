@@ -46,7 +46,7 @@ function FkSelect({
     modal.toggle({
       matchAnchorWidth: true,
       component: (
-        <div className="max-h-52 overflow-auto">
+        <div className="max-h-52 overflow-auto shadow-md rounded-lg bg-white">
           {options.length === 0 ? (
             <p className="px-3 py-2 text-sm text-gray-400 italic">No options available</p>
           ) : (
