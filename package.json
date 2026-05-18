@@ -11,7 +11,7 @@
     "git": "npm run build && npm run git-push",
 
     "prisma-migrate": "prisma migrate dev --name auto && prisma generate",
-    "prisma-sync": "npx tsx app/lib/scripts/generateTypes.ts",
+    "prisma-sync": "npx tsx app/framework/lib/scripts/generateTypes.ts",
     "prisma": "npm run prisma-migrate && npm run prisma-sync && npm run dev"
   },
   "dependencies": {

@@ -1,4 +1,4 @@
-import type { LoadingInfo } from "@/context/AppContext";
+import type { LoadingInfo } from "@/framework/ui/context/AppContext";
 
 type Operation = LoadingInfo["operation"];
 

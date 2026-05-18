@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation'; // useParams hook for accessing dynamic route params
-import { validatePassword } from "@/utils/validatePassword";
+import { validatePassword } from "@/framework/utils/validatePassword";
 import { signIn } from 'next-auth/react';
 import { googleButtonClasses } from '../../buttonStyles';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';

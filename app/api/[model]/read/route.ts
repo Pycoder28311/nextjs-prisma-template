@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/framework/lib/prisma";
 import { NextRequest } from "next/server";
 import { resolveModel } from "../../lib/allowedModels";
 import { modelHasField } from "../../lib/models";

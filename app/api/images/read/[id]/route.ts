@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma"
+import { prisma } from "@/framework/lib/prisma"
 import { NextResponse } from "next/server"
 
 type RouteContext = { params: Promise<{ id: string }> }

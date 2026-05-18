@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useTable } from "@/utils/useTable";
+import { useTable } from "@/framework/utils/useTable";
 
 type Props = {
   table: string;

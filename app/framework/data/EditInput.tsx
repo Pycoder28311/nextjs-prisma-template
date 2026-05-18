@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "@/context/AppContext";
-import CrudButton from "@/components/CrudButton";
+import { useApp } from "@/framework/ui/context/AppContext";
+import CrudButton from "@/framework/data/buttons/CrudButton";
 
 export type FieldType = "String" | "Int" | "Float" | "Boolean" | "DateTime" | "Json";
 

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { validatePassword } from "@/utils/validatePassword";
+import { validatePassword } from "@/framework/utils/validatePassword";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { googleButtonClasses } from "../buttonStyles";

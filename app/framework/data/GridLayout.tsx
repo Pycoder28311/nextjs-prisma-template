@@ -2,7 +2,7 @@
 
 import React from "react";
 import { flushSync } from "react-dom";
-import { useApp } from "@/context/AppContext";
+import { useApp } from "@/framework/ui/context/AppContext";
 import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-pangea/dnd";
 
 type GridSpec = `${number}x${number}`;

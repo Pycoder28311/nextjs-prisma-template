@@ -18,7 +18,7 @@ const typesContent = `export type {
 
 const typesPath = path.join(
   process.cwd(),
-  "app/config/types/index.ts"
+  "app/framework/types/index.ts"
 );
 
 fs.mkdirSync(path.dirname(typesPath), { recursive: true });

@@ -1,9 +1,9 @@
 "use client";
 
-import type { Product } from "@/config/types";
-import EditInput from "@/components/EditInput";
-import CrudButton from "@/components/CrudButton";
-import { useTable } from "@/utils/useTable";
+import type { Product } from "@/framework/types";
+import EditInput from "@/framework/data/EditInput";
+import CrudButton from "@/framework/data/buttons/CrudButton";
+import { useTable } from "@/framework/utils/useTable";
 
 type Props = {
   product: Product;

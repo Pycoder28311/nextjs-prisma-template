@@ -2,8 +2,8 @@
 
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import Navbar from "@/components/navigation/Navbar";
-import Footer from "@/components/navigation/Footer";
+import Navbar from "@/framework/ui/navigation/Navbar";
+import Footer from "@/framework/ui/navigation/Footer";
 
 const SHELL_HIDDEN_PATHS = [
   "/login",

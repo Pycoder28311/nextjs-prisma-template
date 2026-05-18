@@ -1,14 +1,14 @@
 "use client";
 
-import type { Product, ProductChild, ManyOne, ManyTwo } from "@/config/types";
-import { useTable } from "@/utils/useTable";
-import { useAbsoluteModal } from "@/context/AppContext";
-import DataForm from "@/components/DataForm";
-import GridLayout from "@/components/GridLayout";
+import type { Product, ProductChild, ManyOne, ManyTwo } from "@/framework/types";
+import { useTable } from "@/framework/utils/useTable";
+import { useAbsoluteModal } from "@/framework/ui/context/AppContext";
+import DataForm from "@/framework/data/DataForm";
+import GridLayout from "@/framework/data/GridLayout";
 import ProductCard from "@/components/ProductCard";
-import CrudButton from "@/components/CrudButton";
-import EditInput from "@/components/EditInput";
-import RelationLinker from "@/components/RelationLinker";
+import CrudButton from "@/framework/data/buttons/CrudButton";
+import EditInput from "@/framework/data/EditInput";
+import RelationLinker from "@/framework/data/buttons/RelationLinker";
 
 function AbsoluteModalExamples() {
   const belowModal = useAbsoluteModal();

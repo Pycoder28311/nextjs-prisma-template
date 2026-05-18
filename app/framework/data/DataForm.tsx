@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createRecord, readRecords, type CrudState } from "@/utils/crud";
-import EditInput from "@/components/EditInput";
-import CrudButton from "@/components/CrudButton";
-import { useApp, useAbsoluteModal } from "@/context/AppContext";
+import { createRecord, readRecords, type CrudState } from "@/framework/utils/crud";
+import EditInput from "@/framework/data/EditInput";
+import CrudButton from "@/framework/data/buttons/CrudButton";
+import { useApp, useAbsoluteModal } from "@/framework/ui/context/AppContext";
 import { tableConfig, DEFAULT_IGNORED_FIELDS } from "@/config/fieldConfig";
 
 function FkSelect({
@@ -60,9 +60,8 @@ function FkSelect({
                     onChange(opt.value);
                     modal.close();
                   }}
-                  className={`w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${
-                    isSelected ? "bg-blue-50 text-blue-700" : "text-gray-700"
-                  }`}
+                  className={`w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${isSelected ? "bg-blue-50 text-blue-700" : "text-gray-700"
+                    }`}
                 >
                   <span className="truncate">{opt.label}</span>
                 </button>

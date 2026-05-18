@@ -3,16 +3,16 @@
 import { useState, useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { useApp } from "@/context/AppContext";
-import ProductsMegaMenu from "@/components/navigation/megamenus/ProductsMegaMenu";
-import AboutMegaMenu from "@/components/navigation/megamenus/AboutMegaMenu";
-import NavSearch from "@/components/navigation/NavSearch";
-import HamburgerButton from "@/components/navigation/HamburgerButton";
-import RightSidebar from "@/components/navigation/RightSidebar";
-import UserMenu from "@/components/navigation/UserMenu";
-import UserSidebar from "@/components/navigation/UserSidebar";
+import { useApp } from "@/framework/ui/context/AppContext";
+import ProductsMegaMenu from "@/framework/ui/navigation/helper/megamenus/ProductsMegaMenu";
+import AboutMegaMenu from "@/framework/ui/navigation/helper/megamenus/AboutMegaMenu";
+import NavSearch from "@/framework/ui/navigation/helper/NavSearch";
+import HamburgerButton from "@/framework/ui/navigation/helper/HamburgerButton";
+import RightSidebar from "@/framework/ui/navigation/helper/RightSidebar";
+import UserMenu from "@/framework/ui/navigation/helper/UserMenu";
+import UserSidebar from "@/framework/ui/navigation/helper/UserSidebar";
 import { useTheme } from "next-themes";
-import { useAbsoluteModal } from "@/context/AppContext";
+import { useAbsoluteModal } from "@/framework/ui/context/AppContext";
 
 type NavLink = {
   href: string;

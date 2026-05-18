@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import type { User } from "@/config/types";
+import type { User } from "@/framework/types";
 
 type Props = {
   user: User | null;

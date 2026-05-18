@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useId, useRef, useState } from "react";
-import type { User } from "@/config/types";
+import type { User } from "@/framework/types";
 import fieldConfig from "@/config/fieldConfig";
 import { useFixedModalState } from "./FixedModal";
 import {

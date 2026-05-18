@@ -2,7 +2,7 @@
 
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useApp } from "@/context/AppContext";
+import { useApp } from "@/framework/ui/context/AppContext";
 
 export type SearchResult = {
   id: string | number;

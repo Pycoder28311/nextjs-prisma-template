@@ -1,7 +1,7 @@
 // src/app/api/auth/reset-password/route.js
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma'; 
-import { sendPasswordResetEmail } from '@/lib/sendResetEmail';
+import { prisma } from '@/framework/lib/prisma'; 
+import { sendPasswordResetEmail } from '@/framework/lib/sendResetEmail';
 
 // Handle POST requests (for sending reset email)
 export async function POST(req) {

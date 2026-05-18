@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import RightSidebar from "@/components/navigation/RightSidebar";
+import RightSidebar from "@/framework/ui/navigation/helper/RightSidebar";
 
 type Props = {
   open: boolean;
