@@ -6,7 +6,7 @@
     "dev": "next dev",
     "start": "next start",
 
-    "build": "next build",
+    "build": "prisma generate && next build",
     "git-push": "git add . && git commit -m \"auto commit\" && git push origin main",
     "git": "npm run build && npm run git-push",
 
