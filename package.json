@@ -12,7 +12,9 @@
 
     "prisma-migrate": "prisma migrate dev --name auto && prisma generate",
     "prisma-sync": "npx tsx app/framework/lib/scripts/generateTypes.ts",
-    "prisma": "npm run prisma-migrate && npm run prisma-sync && npm run dev"
+    "prisma": "npm run prisma-migrate && npm run prisma-sync && npm run dev",
+
+    "docker": "docker compose up --build -d"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
