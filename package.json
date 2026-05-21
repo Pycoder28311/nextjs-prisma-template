@@ -5,16 +5,18 @@
   "scripts": {
     "dev": "next dev",
     "start": "next start",
-
     "build": "prisma generate && next build",
     "git-push": "git add . && git commit -m \"auto commit\" && git push origin main",
-    "git": "npm run build && npm run git-push",
-
+    "git": "next build && npm run git-push",
     "prisma-migrate": "prisma migrate dev --name auto && prisma generate",
     "prisma-sync": "npx tsx app/framework/lib/scripts/generateTypes.ts",
     "prisma": "npm run prisma-migrate && npm run prisma-sync && npm run dev",
-
-    "docker": "docker compose up --build -d"
+    "docker": "docker compose up --build -d",
+    "docker-k6": "docker run --rm -v \"%cd%/load-tests:/scripts\" grafana/k6 run /scripts/script.js",
+    "k6": "k6 run load-tests/script.js",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "restart": "rm -rf node_modules package-lock.json && echo \"deleted\" && npm install"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
@@ -32,7 +34,8 @@
     "resend": "^6.12.2"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
+    "@playwright/test": "^1.60.0",
+    "@tailwindcss/postcss": "^4.3.0",
     "@types/node": "^20",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
