@@ -28,7 +28,9 @@ async function signIn(page: Page) {
 // Use these headings to scope actions to the right section.
 
 async function openCreateModal(page: Page, sectionHeading: string) {
-  const section = page.locator('div', { has: page.locator(`h2:text-is("${sectionHeading}")`) }).first();
+  // Use the heading's immediate parent — the section wrapper that holds just
+  // this heading + its DataForm Create button.
+  const section = page.locator(`h2:text-is("${sectionHeading}")`).locator('..');
   await section.getByRole('button', { name: 'Create' }).click();
   // Modal opens with title "New <table>"
   await expect(page.locator('h2', { hasText: /^New /i }).last()).toBeVisible();

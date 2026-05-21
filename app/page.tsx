@@ -9,6 +9,7 @@ import DataForm from "@/framework/data/DataForm";
 import GridLayout from "@/framework/data/GridLayout";
 import ImageUpload from "@/framework/data/image/ImageUpload";
 import ImageGallery from "@/framework/data/image/ImageGallery";
+import RichTextEditor from "@/framework/data/RichTextEditor";
 import ProductCard from "@/components/ProductCard";
 import CrudButton from "@/framework/data/buttons/CrudButton";
 import EditInput from "@/framework/data/EditInput";
@@ -248,6 +249,11 @@ export default function HomePage() {
         <div>
           <h2 className="text-lg font-semibold text-gray-700 mb-3">Uploaded Images</h2>
           <ImageGallery refreshKey={galleryKey} />
+        </div>
+
+        <div>
+          <h2 className="text-lg font-semibold text-gray-700 mb-3">Rich Text Editor</h2>
+          <RichTextEditor placeholder="Start typing..." />
         </div>
 
         <div>

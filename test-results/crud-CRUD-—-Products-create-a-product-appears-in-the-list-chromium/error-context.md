@@ -7,26 +7,25 @@
 # Test info
 
 - Name: crud.spec.ts >> CRUD — Products >> create a product appears in the list
-- Location: e2e\crud.spec.ts:62:7
+- Location: e2e\crud.spec.ts:64:7
 
 # Error details
 
 ```
-Error: locator.click: Error: strict mode violation: locator('div').filter({ has: locator('h2:text-is("New Product")') }).first().getByRole('button', { name: 'Create' }) resolved to 4 elements:
-    1) <button class="text-xs px-2 py-1 rounded disabled:opacity-50 disabled:cursor-not-allowed bg-green-600 text-white hover:bg-green-700">Create</button> aka getByRole('button', { name: 'Create' }).first()
-    2) <button class="text-xs px-2 py-1 rounded disabled:opacity-50 disabled:cursor-not-allowed bg-green-600 text-white hover:bg-green-700">Create</button> aka getByRole('button', { name: 'Create' }).nth(1)
-    3) <button class="text-xs px-2 py-1 rounded disabled:opacity-50 disabled:cursor-not-allowed bg-green-600 text-white hover:bg-green-700">Create</button> aka getByRole('button', { name: 'Create' }).nth(2)
-    4) <button class="text-xs px-2 py-1 rounded disabled:opacity-50 disabled:cursor-not-allowed bg-green-600 text-white hover:bg-green-700">Create</button> aka getByRole('button', { name: 'Create' }).nth(3)
+Test timeout of 30000ms exceeded.
+```
 
+```
+Error: locator.fill: Test timeout of 30000ms exceeded.
 Call log:
-  - waiting for locator('div').filter({ has: locator('h2:text-is("New Product")') }).first().getByRole('button', { name: 'Create' })
+  - waiting for locator('div.fixed.z-50').last().locator('input[type="text"]').first()
 
 ```
 
 # Page snapshot
 
 ```yaml
-- generic [active] [ref=e1]:
+- generic [ref=e1]:
   - navigation [ref=e2]:
     - generic [ref=e4]:
       - generic [ref=e5]:
@@ -108,70 +107,154 @@ Call log:
       - button "Close sidebar" [ref=e79]:
         - img [ref=e80]
     - generic [ref=e83]:
-      - link "Sign in" [ref=e84] [cursor=pointer]:
-        - /url: /login
-      - link "Register" [ref=e85] [cursor=pointer]:
-        - /url: /register
-  - main [ref=e86]:
-    - generic [ref=e87]:
-      - generic [ref=e88]:
-        - generic [ref=e89]:
-          - heading "Absolute modal examples" [level=2] [ref=e90]
-          - generic [ref=e91]:
-            - button "Open below" [ref=e92]
-            - button "Open dropdown menu" [ref=e93]
-            - button "Open right-aligned" [ref=e94]
-            - button "Hover me" [ref=e95]
-          - paragraph [ref=e96]: Click multiple buttons to stack modals — they don't close each other. Click anywhere outside the triggers and modals to close them all. The green button uses hover.
-        - generic [ref=e97]:
-          - heading "New Product" [level=2] [ref=e98]
-          - button "Create" [ref=e99]
+      - generic [ref=e84]:
+        - paragraph [ref=e85]: Crud Tester
+        - paragraph [ref=e86]: crud_1779397023056@example.com
+      - link "Profile" [ref=e87] [cursor=pointer]:
+        - /url: /profile
+        - img [ref=e88]
+        - text: Profile
+      - link "Settings" [ref=e90] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e91]
+        - text: Settings
+      - link "Sign out" [ref=e95] [cursor=pointer]:
+        - /url: /api/auth/signout
+        - img [ref=e96]
+        - text: Sign out
+  - main [ref=e98]:
+    - generic [ref=e99]:
+      - generic [ref=e100]:
         - generic [ref=e101]:
-          - heading "Products" [level=2] [ref=e102]
+          - heading "Absolute modal examples" [level=2] [ref=e102]
           - generic [ref=e103]:
-            - text: "[loading] read on"
-            - strong [ref=e104]: product
-      - generic [ref=e105]:
-        - generic [ref=e106]:
-          - heading "New Product Child" [level=2] [ref=e107]
-          - button "Create" [ref=e108]
+            - button "Open below" [ref=e104]
+            - button "Open dropdown menu" [ref=e105]
+            - button "Open right-aligned" [ref=e106]
+            - button "Pin to screen" [ref=e107]
+            - button "Hover me" [ref=e108]
+          - paragraph [ref=e109]: Click multiple buttons to stack modals — they don't close each other. Click anywhere outside the triggers and modals to close them all. The green button uses hover.
         - generic [ref=e110]:
-          - heading "Product Children" [level=2] [ref=e111]
-          - generic [ref=e112]:
-            - text: "[loading] read on"
-            - strong [ref=e113]: productChild
-      - generic [ref=e114]:
-        - generic [ref=e115]:
-          - heading "New Many One" [level=2] [ref=e116]
-          - button "Create" [ref=e117]
-        - generic [ref=e119]:
-          - heading "Many Ones" [level=2] [ref=e120]
-          - generic [ref=e121]:
-            - text: "[loading] read on"
-            - strong [ref=e122]: manyOne
-      - generic [ref=e123]:
-        - generic [ref=e124]:
-          - heading "New Many Two" [level=2] [ref=e125]
-          - button "Create" [ref=e126]
-        - generic [ref=e128]:
-          - heading "Many Twos" [level=2] [ref=e129]
-          - generic [ref=e130]:
-            - text: "[loading] read on"
-            - strong [ref=e131]: manyTwo
-  - contentinfo [ref=e132]:
-    - generic [ref=e134]:
-      - generic [ref=e135]: MyApp
-      - generic [ref=e136]:
-        - link "Home" [ref=e137] [cursor=pointer]:
+          - heading "New Image" [level=2] [ref=e111]
+          - button "Choose File" [ref=e113]
+        - generic [ref=e114]:
+          - heading "Uploaded Images" [level=2] [ref=e115]
+          - generic [ref=e116]:
+            - generic [ref=e117]:
+              - generic [ref=e119]:
+                - img "Image 2" [ref=e120]
+                - button "Edit image style" [ref=e121]:
+                  - img [ref=e122]
+              - generic [ref=e124]: No alt text
+            - generic [ref=e125]:
+              - generic [ref=e127]:
+                - img "Image 1" [ref=e128]
+                - button "Edit image style" [ref=e129]:
+                  - img [ref=e130]
+              - generic [ref=e132]: No alt text
+        - generic [ref=e133]:
+          - heading "New Product" [level=2] [ref=e134]
+          - button "Create" [ref=e135]
+        - generic [ref=e136]:
+          - generic [ref=e137]:
+            - heading "Products" [level=2] [ref=e138]
+            - generic [ref=e139]:
+              - text: "[loaded] read on"
+              - strong [ref=e140]: product
+              - text: — 926ms
+          - generic [ref=e141]:
+            - button "Gadget Edit 8 Edit Delete" [ref=e142]:
+              - generic [ref=e143]:
+                - generic [ref=e144]:
+                  - generic [ref=e145]: Gadget
+                  - button "Edit" [ref=e146]
+                - generic [ref=e147]:
+                  - generic [ref=e148]: "8"
+                  - button "Edit" [ref=e149]
+                - button "Delete" [ref=e150]
+            - button "Doohickey Edit 5 Edit Delete" [ref=e151]:
+              - generic [ref=e152]:
+                - generic [ref=e153]:
+                  - generic [ref=e154]: Doohickey
+                  - button "Edit" [ref=e155]
+                - generic [ref=e156]:
+                  - generic [ref=e157]: "5"
+                  - button "Edit" [ref=e158]
+                - button "Delete" [ref=e159]
+            - button "Unauthorized Product Edit 1 Edit Delete" [ref=e160]:
+              - generic [ref=e161]:
+                - generic [ref=e162]:
+                  - generic [ref=e163]: Unauthorized Product
+                  - button "Edit" [ref=e164]
+                - generic [ref=e165]:
+                  - generic [ref=e166]: "1"
+                  - button "Edit" [ref=e167]
+                - button "Delete" [ref=e168]
+      - generic [ref=e169]:
+        - generic [ref=e170]:
+          - heading "New Product Child" [level=2] [ref=e171]
+          - button "Create" [ref=e172]
+        - generic [ref=e174]:
+          - heading "Product Children" [level=2] [ref=e175]
+          - generic [ref=e176]:
+            - text: "[loaded] read on"
+            - strong [ref=e177]: productChild
+            - text: — 1727ms
+      - generic [ref=e178]:
+        - generic [ref=e179]:
+          - heading "New Many One" [level=2] [ref=e180]
+          - button "Create" [ref=e181]
+        - generic [ref=e183]:
+          - heading "Many Ones" [level=2] [ref=e184]
+          - generic [ref=e185]:
+            - text: "[loaded] read on"
+            - strong [ref=e186]: manyOne
+            - text: — 1674ms
+      - generic [ref=e187]:
+        - generic [ref=e188]:
+          - heading "New Many Two" [level=2] [ref=e189]
+          - button "Create" [ref=e190]
+        - generic [ref=e192]:
+          - heading "Many Twos" [level=2] [ref=e193]
+          - generic [ref=e194]:
+            - text: "[loaded] read on"
+            - strong [ref=e195]: manyTwo
+            - text: — 1723ms
+  - contentinfo [ref=e196]:
+    - generic [ref=e198]:
+      - generic [ref=e199]: MyApp
+      - generic [ref=e200]:
+        - link "Home" [ref=e201] [cursor=pointer]:
           - /url: /
-        - link "About" [ref=e138] [cursor=pointer]:
+        - link "About" [ref=e202] [cursor=pointer]:
           - /url: /about
-        - link "Privacy" [ref=e139] [cursor=pointer]:
+        - link "Privacy" [ref=e203] [cursor=pointer]:
           - /url: /privacy
-        - link "Terms" [ref=e140] [cursor=pointer]:
+        - link "Terms" [ref=e204] [cursor=pointer]:
           - /url: /terms
-      - paragraph [ref=e141]: © 2026 MyApp. All rights reserved.
-  - alert [ref=e142]
+      - paragraph [ref=e205]: © 2026 MyApp. All rights reserved.
+  - button "Open Next.js Dev Tools" [ref=e211] [cursor=pointer]:
+    - img [ref=e212]
+  - alert [ref=e215]
+  - generic [ref=e217]:
+    - generic [ref=e218]:
+      - heading "New product" [level=2] [ref=e219]
+      - button "×" [ref=e220]
+    - generic [ref=e222]:
+      - generic [ref=e223]:
+        - generic [ref=e224]: Price (€)*
+        - spinbutton [ref=e227]: "0"
+      - generic [ref=e228]:
+        - generic [ref=e229]: Product Name*
+        - combobox [active] [ref=e232]:
+          - option "Widget" [selected]
+          - option "Gadget"
+          - option "Doohickey"
+          - option "Thingamajig"
+      - generic [ref=e234]:
+        - paragraph [ref=e235]: Child Product
+        - button "+ Add Child Product" [ref=e236]
+      - button "Create" [ref=e238]
 ```
 
 # Test source
@@ -207,99 +290,101 @@ Call log:
   28  | // Use these headings to scope actions to the right section.
   29  | 
   30  | async function openCreateModal(page: Page, sectionHeading: string) {
-  31  |   const section = page.locator('div', { has: page.locator(`h2:text-is("${sectionHeading}")`) }).first();
-> 32  |   await section.getByRole('button', { name: 'Create' }).click();
-      |                                                         ^ Error: locator.click: Error: strict mode violation: locator('div').filter({ has: locator('h2:text-is("New Product")') }).first().getByRole('button', { name: 'Create' }) resolved to 4 elements:
-  33  |   // Modal opens with title "New <table>"
-  34  |   await expect(page.locator('h2', { hasText: /^New /i }).last()).toBeVisible();
-  35  | }
-  36  | 
-  37  | async function submitCreateModal(page: Page) {
-  38  |   // The modal renders its own "Create" submit button at the bottom.
-  39  |   // After the modal opens, there are multiple Create buttons; the modal's is the last in DOM.
-  40  |   await page.getByRole('button', { name: 'Create' }).last().click();
-  41  | }
-  42  | 
-  43  | test.describe('CRUD — Products', () => {
-  44  |   test.describe.configure({ mode: 'serial' });
-  45  | 
-  46  |   test.beforeAll(async ({ browser }) => {
-  47  |     const page = await browser.newPage();
-  48  |     try {
-  49  |       await signUp(page);
-  50  |     } catch (err) {
-  51  |       console.log('Signup may have failed (user might already exist):', err);
-  52  |     }
-  53  |     await page.close();
-  54  |   });
-  55  | 
-  56  |   test('dashboard loads with Products section', async ({ page }) => {
-  57  |     await signIn(page);
-  58  |     await expect(page.locator('h2:text-is("Products")')).toBeVisible();
-  59  |     await expect(page.locator('h2:text-is("New Product")')).toBeVisible();
-  60  |   });
-  61  | 
-  62  |   test('create a product appears in the list', async ({ page }) => {
-  63  |     await signIn(page);
-  64  | 
-  65  |     const productName = `Test Product ${Date.now()}`;
+  31  |   // Use the heading's immediate parent — the section wrapper that holds just
+  32  |   // this heading + its DataForm Create button.
+  33  |   const section = page.locator(`h2:text-is("${sectionHeading}")`).locator('..');
+  34  |   await section.getByRole('button', { name: 'Create' }).click();
+  35  |   // Modal opens with title "New <table>"
+  36  |   await expect(page.locator('h2', { hasText: /^New /i }).last()).toBeVisible();
+  37  | }
+  38  | 
+  39  | async function submitCreateModal(page: Page) {
+  40  |   // The modal renders its own "Create" submit button at the bottom.
+  41  |   // After the modal opens, there are multiple Create buttons; the modal's is the last in DOM.
+  42  |   await page.getByRole('button', { name: 'Create' }).last().click();
+  43  | }
+  44  | 
+  45  | test.describe('CRUD — Products', () => {
+  46  |   test.describe.configure({ mode: 'serial' });
+  47  | 
+  48  |   test.beforeAll(async ({ browser }) => {
+  49  |     const page = await browser.newPage();
+  50  |     try {
+  51  |       await signUp(page);
+  52  |     } catch (err) {
+  53  |       console.log('Signup may have failed (user might already exist):', err);
+  54  |     }
+  55  |     await page.close();
+  56  |   });
+  57  | 
+  58  |   test('dashboard loads with Products section', async ({ page }) => {
+  59  |     await signIn(page);
+  60  |     await expect(page.locator('h2:text-is("Products")')).toBeVisible();
+  61  |     await expect(page.locator('h2:text-is("New Product")')).toBeVisible();
+  62  |   });
+  63  | 
+  64  |   test('create a product appears in the list', async ({ page }) => {
+  65  |     await signIn(page);
   66  | 
-  67  |     await openCreateModal(page, 'New Product');
+  67  |     const productName = `Test Product ${Date.now()}`;
   68  | 
-  69  |     // Inside the modal: first text input is "name", first number input is "price".
-  70  |     const modal = page.locator('div.fixed.z-50').last();
-  71  |     await modal.locator('input[type="text"]').first().fill(productName);
-  72  |     await modal.locator('input[type="number"]').first().fill('19.99');
-  73  | 
-  74  |     await submitCreateModal(page);
+  69  |     await openCreateModal(page, 'New Product');
+  70  | 
+  71  |     // Inside the modal: first text input is "name", first number input is "price".
+  72  |     const modal = page.locator('div.fixed.z-50').last();
+> 73  |     await modal.locator('input[type="text"]').first().fill(productName);
+      |                                                       ^ Error: locator.fill: Test timeout of 30000ms exceeded.
+  74  |     await modal.locator('input[type="number"]').first().fill('19.99');
   75  | 
-  76  |     await expect(page.locator(`text=${productName}`)).toBeVisible({ timeout: 10000 });
-  77  |   });
-  78  | 
-  79  |   test('edit a product name inline', async ({ page }) => {
-  80  |     await signIn(page);
-  81  | 
-  82  |     const original = `Edit Me ${Date.now()}`;
-  83  |     const renamed = `Renamed ${Date.now()}`;
-  84  | 
-  85  |     // Create one first
-  86  |     await openCreateModal(page, 'New Product');
-  87  |     const modal = page.locator('div.fixed.z-50').last();
-  88  |     await modal.locator('input[type="text"]').first().fill(original);
-  89  |     await modal.locator('input[type="number"]').first().fill('1.00');
-  90  |     await submitCreateModal(page);
-  91  |     await expect(page.locator(`text=${original}`)).toBeVisible();
-  92  | 
-  93  |     // Find the product row containing that text and click its Edit
-  94  |     const row = page.locator('div.bg-white', { hasText: original }).first();
-  95  |     await row.getByRole('button', { name: 'Edit' }).first().click();
-  96  | 
-  97  |     // Replace the value in the now-visible input
-  98  |     const input = row.locator('input[type="text"]').first();
-  99  |     await input.fill(renamed);
-  100 |     await row.getByRole('button', { name: 'Save' }).click();
-  101 | 
-  102 |     await expect(page.locator(`text=${renamed}`)).toBeVisible({ timeout: 10000 });
-  103 |   });
-  104 | 
-  105 |   test('delete a product removes it from the list', async ({ page }) => {
-  106 |     await signIn(page);
-  107 | 
-  108 |     const name = `Delete Me ${Date.now()}`;
+  76  |     await submitCreateModal(page);
+  77  | 
+  78  |     await expect(page.locator(`text=${productName}`)).toBeVisible({ timeout: 10000 });
+  79  |   });
+  80  | 
+  81  |   test('edit a product name inline', async ({ page }) => {
+  82  |     await signIn(page);
+  83  | 
+  84  |     const original = `Edit Me ${Date.now()}`;
+  85  |     const renamed = `Renamed ${Date.now()}`;
+  86  | 
+  87  |     // Create one first
+  88  |     await openCreateModal(page, 'New Product');
+  89  |     const modal = page.locator('div.fixed.z-50').last();
+  90  |     await modal.locator('input[type="text"]').first().fill(original);
+  91  |     await modal.locator('input[type="number"]').first().fill('1.00');
+  92  |     await submitCreateModal(page);
+  93  |     await expect(page.locator(`text=${original}`)).toBeVisible();
+  94  | 
+  95  |     // Find the product row containing that text and click its Edit
+  96  |     const row = page.locator('div.bg-white', { hasText: original }).first();
+  97  |     await row.getByRole('button', { name: 'Edit' }).first().click();
+  98  | 
+  99  |     // Replace the value in the now-visible input
+  100 |     const input = row.locator('input[type="text"]').first();
+  101 |     await input.fill(renamed);
+  102 |     await row.getByRole('button', { name: 'Save' }).click();
+  103 | 
+  104 |     await expect(page.locator(`text=${renamed}`)).toBeVisible({ timeout: 10000 });
+  105 |   });
+  106 | 
+  107 |   test('delete a product removes it from the list', async ({ page }) => {
+  108 |     await signIn(page);
   109 | 
-  110 |     await openCreateModal(page, 'New Product');
-  111 |     const modal = page.locator('div.fixed.z-50').last();
-  112 |     await modal.locator('input[type="text"]').first().fill(name);
-  113 |     await modal.locator('input[type="number"]').first().fill('1.00');
-  114 |     await submitCreateModal(page);
-  115 |     await expect(page.locator(`text=${name}`)).toBeVisible();
-  116 | 
-  117 |     const row = page.locator('div.bg-white', { hasText: name }).first();
-  118 |     await row.getByRole('button', { name: 'Delete' }).click();
-  119 | 
-  120 |     await expect(page.locator(`text=${name}`)).not.toBeVisible({ timeout: 10000 });
-  121 |   });
-  122 | 
-  123 | });
+  110 |     const name = `Delete Me ${Date.now()}`;
+  111 | 
+  112 |     await openCreateModal(page, 'New Product');
+  113 |     const modal = page.locator('div.fixed.z-50').last();
+  114 |     await modal.locator('input[type="text"]').first().fill(name);
+  115 |     await modal.locator('input[type="number"]').first().fill('1.00');
+  116 |     await submitCreateModal(page);
+  117 |     await expect(page.locator(`text=${name}`)).toBeVisible();
+  118 | 
+  119 |     const row = page.locator('div.bg-white', { hasText: name }).first();
+  120 |     await row.getByRole('button', { name: 'Delete' }).click();
+  121 | 
+  122 |     await expect(page.locator(`text=${name}`)).not.toBeVisible({ timeout: 10000 });
+  123 |   });
   124 | 
+  125 | });
+  126 | 
 ```
