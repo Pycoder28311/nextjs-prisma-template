@@ -9,6 +9,14 @@ import {
   type OpenAbsoluteModalArgs,
   type UseAbsoluteModalArgs,
 } from "./AbsoluteModal";
+import Alert, { type AlertType } from "@/framework/ui/Alert";
+
+type AlertEntry = {
+  id: string;
+  type: AlertType;
+  message: string;
+  durationMs: number;
+};
 
 export type {
   AbsoluteModalSide,
@@ -48,6 +56,8 @@ type AppContextType = {
   closeAbsoluteModalSoon: (id: string, delay?: number) => void;
   cancelCloseAbsoluteModal: (id: string) => void;
   isAbsoluteModalOpen: (id: string) => boolean;
+  addAlert: (alert: { type: AlertType; message: string; durationMs?: number }) => string;
+  removeAlert: (id: string) => void;
 };
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -59,6 +69,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [tableLoadings, setTableLoadings] = useState<Record<string, LoadingInfo>>({});
   const [tableRecords, setTableRecordsState] = useState<Record<string, any[]>>({});
   const [tableDeletingId, setTableDeletingIdState] = useState<Record<string, (number | string)[]>>({});
+  const [alerts, setAlerts] = useState<AlertEntry[]>([]);
+  const alertCounter = useRef(0);
+
+  const addAlert = ({ type, message, durationMs = 3000 }: { type: AlertType; message: string; durationMs?: number }) => {
+    const id = `alert-${Date.now()}-${alertCounter.current++}`;
+    setAlerts((prev) => [...prev, { id, type, message, durationMs }]);
+    return id;
+  };
+
+  const removeAlert = (id: string) => {
+    setAlerts((prev) => prev.filter((a) => a.id !== id));
+  };
 
   const { openModal, closeModal, modalNode } = useFixedModalState();
   const {
@@ -127,10 +149,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AppContext.Provider value={{ isMobile, user, setUser, prismaFields, extendField, openModal, closeModal, openAbsoluteModal, closeAbsoluteModal, closeAbsoluteModalSoon, cancelCloseAbsoluteModal, isAbsoluteModalOpen, tableLoadings, setTableLoading, tableRecords, setTableRecords, updateTableRecords, tableDeletingId, setTableDeletingId }}>
+    <AppContext.Provider value={{ isMobile, user, setUser, prismaFields, extendField, openModal, closeModal, openAbsoluteModal, closeAbsoluteModal, closeAbsoluteModalSoon, cancelCloseAbsoluteModal, isAbsoluteModalOpen, tableLoadings, setTableLoading, tableRecords, setTableRecords, updateTableRecords, tableDeletingId, setTableDeletingId, addAlert, removeAlert }}>
       {children}
       {modalNode}
       {absoluteModalsNode}
+      {alerts.length > 0 && (
+        <div className="fixed top-0 left-0 right-0 z-[80] flex flex-col items-center sm:items-end gap-2 px-3 sm:pr-5 pt-2 sm:pt-5 pointer-events-none">
+          {alerts.map((alert) => (
+            <Alert
+              key={alert.id}
+              type={alert.type}
+              message={alert.message}
+              durationMs={alert.durationMs}
+              onClose={() => removeAlert(alert.id)}
+            />
+          ))}
+        </div>
+      )}
     </AppContext.Provider>
   );
 }
@@ -152,12 +187,37 @@ export function useAbsoluteModal<T extends HTMLElement = HTMLButtonElement>() {
     isAbsoluteModalOpen,
   } = useApp();
 
-  const open = ({ component, side, align, offset, matchAnchorWidth, closeOnLeave }: UseAbsoluteModalArgs) => {
+  const open = ({
+    component,
+    side,
+    align,
+    offset,
+    matchAnchorWidth,
+    closeOnLeave,
+    closeOnOutsideClick,
+    relativeToButton,
+    top,
+    left,
+    right,
+    bottom,
+  }: UseAbsoluteModalArgs) => {
     openAbsoluteModal({
       id,
       component,
       closeOnLeave,
-      position: { anchor: triggerRef.current, side, align, offset, matchAnchorWidth },
+      closeOnOutsideClick,
+      position: {
+        anchor: triggerRef.current,
+        side,
+        align,
+        offset,
+        matchAnchorWidth,
+        relativeToButton,
+        top,
+        left,
+        right,
+        bottom,
+      },
     });
   };
 

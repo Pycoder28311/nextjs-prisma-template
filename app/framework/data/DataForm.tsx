@@ -5,6 +5,7 @@ import { createRecord, readRecords, type CrudState } from "@/framework/utils/cru
 import EditInput from "@/framework/data/EditInput";
 import CrudButton from "@/framework/data/buttons/CrudButton";
 import { useApp, useAbsoluteModal } from "@/framework/ui/context/AppContext";
+import { useAlert } from "@/framework/ui/useAlert";
 import { tableConfig, DEFAULT_IGNORED_FIELDS } from "@/config/fieldConfig";
 
 function FkSelect({
@@ -121,6 +122,7 @@ type Props = {
 
 function DataFormFields({ table, onSuccess, closeOnSuccess = true, onData }: Props) {
   const { prismaFields, closeModal } = useApp();
+  const { showAlert } = useAlert();
   const instanceCounter = useRef(0);
 
   const ignoredFields = [...DEFAULT_IGNORED_FIELDS, ...(tableConfig[table]?.ignoredFields ?? [])];
@@ -228,6 +230,8 @@ function DataFormFields({ table, onSuccess, closeOnSuccess = true, onData }: Pro
         setChildInstances({});
         setErrors({});
         onData?.(initial);
+      } else if (s.loading.status === "failed") {
+        showAlert("Error", `Failed to create ${table}`);
       }
     });
   };

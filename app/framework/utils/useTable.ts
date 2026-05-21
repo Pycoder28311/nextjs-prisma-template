@@ -3,11 +3,13 @@
 import { useEffect, useRef } from "react";
 import { readRecords, deleteRecords, updateRecords, type CrudState } from "./crud";
 import { useApp, type LoadingInfo } from "@/framework/ui/context/AppContext";
+import { useAlert } from "@/framework/ui/useAlert";
 
 type WithId = { id: number | string };
 
 export function useTable<T extends WithId>(model: string, filter?: object, select?: object) {
   const { tableRecords, setTableRecords, updateTableRecords, tableLoadings, setTableLoading, tableDeletingId, setTableDeletingId, prismaFields } = useApp();
+  const { showAlert } = useAlert();
   const tableRecordsRef = useRef(tableRecords);
   tableRecordsRef.current = tableRecords;
 
@@ -48,6 +50,8 @@ export function useTable<T extends WithId>(model: string, filter?: object, selec
       if (childArr.length > 0)
         updateTableRecords(childKey, (prev) => [...prev, ...childArr]);
     }
+
+    showAlert("Success", `${model} created`);
   };
 
   const remove = async (id: number | string) => {
@@ -71,6 +75,9 @@ export function useTable<T extends WithId>(model: string, filter?: object, selec
             updateTableRecords(childKey, (prev) => prev.filter((child) => child[fkField] !== id));
           }
         }
+        showAlert("Success", `${model} deleted`);
+      } else if (s.loading.status === "failed") {
+        showAlert("Error", `Failed to delete ${model}`);
       }
       if (s.loading.status === "loaded" || s.loading.status === "failed")
         setTableDeletingId(key, id, false);
@@ -80,8 +87,12 @@ export function useTable<T extends WithId>(model: string, filter?: object, selec
   const update = async (id: number | string, data: object) => {
     await updateRecords<T>(model, { id }, data, (s) => {
       syncLoading(s.loading);
-      if (s.loading.status === "loaded")
+      if (s.loading.status === "loaded") {
         updateTableRecords(key, (prev) => prev.map((item) => item.id === id ? { ...item, ...data } as T : item));
+        showAlert("Success", `${model} updated`);
+      } else if (s.loading.status === "failed") {
+        showAlert("Error", `Failed to update ${model}`);
+      }
     });
   };
 

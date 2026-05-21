@@ -3,6 +3,7 @@
 import type { Product, ProductChild, ManyOne, ManyTwo } from "@/framework/types";
 import { useTable } from "@/framework/utils/useTable";
 import { useAbsoluteModal } from "@/framework/ui/context/AppContext";
+import { useAlert } from "@/framework/ui/useAlert";
 import DataForm from "@/framework/data/DataForm";
 import GridLayout from "@/framework/data/GridLayout";
 import ProductCard from "@/components/ProductCard";
@@ -15,6 +16,7 @@ function AbsoluteModalExamples() {
   const aboveModal = useAbsoluteModal();
   const rightModal = useAbsoluteModal();
   const hoverModal = useAbsoluteModal();
+  const { showAlert } = useAlert();
 
   return (
     <div className="border border-gray-200 rounded-xl p-4 flex flex-col gap-3">
@@ -94,6 +96,13 @@ function AbsoluteModalExamples() {
           className="px-3 py-2 text-sm rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
         >
           Open right-aligned
+        </button>
+        <button
+          type="button"
+          onClick={() => showAlert("Success", "Pinned to top-right of the screen!")}
+          className="px-3 py-2 text-sm rounded-lg bg-purple-600 text-white hover:bg-purple-700"
+        >
+          Pin to screen
         </button>
         <button
           {...hoverModal.triggerProps}

@@ -23,6 +23,7 @@ export type OpenAbsoluteModalArgs = {
   position: AbsoluteModalPosition;
   id?: string;
   closeOnLeave?: boolean;
+  closeOnOutsideClick?: boolean;
 };
 
 export type UseAbsoluteModalArgs = {
@@ -32,6 +33,12 @@ export type UseAbsoluteModalArgs = {
   offset?: number;
   matchAnchorWidth?: boolean;
   closeOnLeave?: boolean;
+  closeOnOutsideClick?: boolean;
+  relativeToButton?: boolean;
+  top?: number | string;
+  left?: number | string;
+  right?: number | string;
+  bottom?: number | string;
 };
 
 type AbsoluteModalEntry = {
@@ -39,6 +46,7 @@ type AbsoluteModalEntry = {
   component: React.ReactNode;
   position: AbsoluteModalPosition;
   closeOnLeave: boolean;
+  closeOnOutsideClick: boolean;
 };
 
 function computeAbsoluteModalStyle(p: AbsoluteModalPosition): React.CSSProperties {
@@ -192,11 +200,14 @@ function AbsoluteModalSlot({
     return () => window.removeEventListener("resize", handler);
   }, [modal.position]);
 
+  const isAnchored = (modal.position.relativeToButton ?? true) && !!modal.position.anchor;
+  const positionClass = isAnchored ? "absolute" : "fixed";
+
   return (
     <div
       ref={ref}
       data-absolute-modal
-      className="absolute z-[70]"
+      className={`${positionClass} z-[70]`}
       style={style}
       onMouseEnter={modal.closeOnLeave ? () => cancelClose(modal.id) : undefined}
       onMouseLeave={modal.closeOnLeave ? () => closeSoon(modal.id) : undefined}
@@ -224,12 +235,22 @@ export function useAbsoluteModalState() {
     position,
     id,
     closeOnLeave,
+    closeOnOutsideClick,
   }: OpenAbsoluteModalArgs): string => {
     const modalId = id ?? `abs-modal-${++absoluteIdCounter.current}`;
     cancelCloseAbsoluteModal(modalId);
     setAbsoluteModals((prev) => {
       const without = prev.filter((m) => m.id !== modalId);
-      return [...without, { id: modalId, component, position, closeOnLeave: closeOnLeave ?? false }];
+      return [
+        ...without,
+        {
+          id: modalId,
+          component,
+          position,
+          closeOnLeave: closeOnLeave ?? false,
+          closeOnOutsideClick: closeOnOutsideClick ?? true,
+        },
+      ];
     });
     return modalId;
   };
@@ -264,7 +285,12 @@ export function useAbsoluteModalState() {
       if (!target) return;
       if (target.closest("[data-absolute-modal]")) return;
       if (target.closest("[data-absolute-modal-trigger]")) return;
-      closeAbsoluteModal();
+      setAbsoluteModals((prev) => {
+        prev
+          .filter((m) => m.closeOnOutsideClick)
+          .forEach((m) => cancelCloseAbsoluteModal(m.id));
+        return prev.filter((m) => !m.closeOnOutsideClick);
+      });
     };
     const attachId = window.setTimeout(() => {
       document.addEventListener("mousedown", handler);
