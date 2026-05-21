@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import type { Product, ProductChild, ManyOne, ManyTwo } from "@/framework/types";
 import { useTable } from "@/framework/utils/useTable";
 import { useAbsoluteModal } from "@/framework/ui/context/AppContext";
 import { useAlert } from "@/framework/ui/useAlert";
 import DataForm from "@/framework/data/DataForm";
 import GridLayout from "@/framework/data/GridLayout";
+import ImageUpload from "@/framework/data/image/ImageUpload";
+import ImageGallery from "@/framework/data/image/ImageGallery";
 import ProductCard from "@/components/ProductCard";
 import CrudButton from "@/framework/data/buttons/CrudButton";
 import EditInput from "@/framework/data/EditInput";
@@ -230,11 +233,22 @@ export default function HomePage() {
   const productChildData = useTable<ProductChild>("productChild");
   const manyOneData = useTable<ManyOne>("manyOne");
   const manyTwoData = useTable<ManyTwo>("manyTwo");
+  const [galleryKey, setGalleryKey] = useState(0);
 
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-2xl mx-auto flex flex-col gap-8">
         <AbsoluteModalExamples />
+
+        <div>
+          <h2 className="text-lg font-semibold text-gray-700 mb-3">New Image</h2>
+          <ImageUpload onUploaded={() => setGalleryKey((k) => k + 1)} />
+        </div>
+
+        <div>
+          <h2 className="text-lg font-semibold text-gray-700 mb-3">Uploaded Images</h2>
+          <ImageGallery refreshKey={galleryKey} />
+        </div>
 
         <div>
           <h2 className="text-lg font-semibold text-gray-700 mb-3">New Product</h2>

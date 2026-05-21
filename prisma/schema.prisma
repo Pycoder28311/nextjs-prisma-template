@@ -11,6 +11,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Account {
@@ -82,7 +83,16 @@ model Image {
   id         Int    @id @default(autoincrement())
   src        Bytes
   alt        String?
-  createdAt  DateTime @default(now())
+
+  blur           Int      @default(0)
+  overlayColor   String?  
+  objectFit      String   @default("cover")
+  positionX      Int      @default(50)
+  positionY      Int      @default(50)
+  rotate         Int      @default(0)
+
+  inText         Boolean  @default(false)
+  createdAt      DateTime @default(now())
 
   parentId   Int?
   parent     String?
