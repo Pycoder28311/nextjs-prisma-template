@@ -6,6 +6,8 @@ import {
   useImageStyleModal,
   saveImageStyle,
   replaceImageFile,
+  applyImageStyle,
+  DEFAULT_IMAGE_STYLE,
   type StyleValues,
   type ObjectFit,
 } from "@/framework/data/image/ImageStyleSettings";
@@ -19,6 +21,13 @@ export type ImageMeta = {
   positionX: number;
   positionY: number;
   rotate: number;
+  scale?: number;
+  cropX?: number;
+  cropY?: number;
+  cropWidth?: number;
+  cropHeight?: number;
+  flipHorizontal?: boolean;
+  flipVertical?: boolean;
 };
 
 type Props = {
@@ -36,6 +45,13 @@ function toStyleValues(meta: ImageMeta): StyleValues {
     positionX: meta.positionX,
     positionY: meta.positionY,
     rotate: meta.rotate,
+    scale: meta.scale ?? DEFAULT_IMAGE_STYLE.scale,
+    cropX: meta.cropX ?? DEFAULT_IMAGE_STYLE.cropX,
+    cropY: meta.cropY ?? DEFAULT_IMAGE_STYLE.cropY,
+    cropWidth: meta.cropWidth ?? DEFAULT_IMAGE_STYLE.cropWidth,
+    cropHeight: meta.cropHeight ?? DEFAULT_IMAGE_STYLE.cropHeight,
+    flipHorizontal: meta.flipHorizontal ?? DEFAULT_IMAGE_STYLE.flipHorizontal,
+    flipVertical: meta.flipVertical ?? DEFAULT_IMAGE_STYLE.flipVertical,
   };
 }
 
@@ -66,16 +82,9 @@ export default function Image({ imageId, editable = false, meta, onUpdated }: Pr
     };
   }, [imageId, meta]);
 
-  const objectFit =
-    (current?.objectFit as React.CSSProperties["objectFit"]) ?? "cover";
-  const imgStyle: React.CSSProperties = {
-    filter: current && current.blur > 0 ? `blur(${current.blur}px)` : undefined,
-    objectFit,
-    objectPosition: current
-      ? `${current.positionX}% ${current.positionY}%`
-      : "50% 50%",
-    transform: current && current.rotate ? `rotate(${current.rotate}deg)` : undefined,
-  };
+  const { imgStyle, overlayStyle } = current
+    ? applyImageStyle(toStyleValues(current))
+    : { imgStyle: {} as React.CSSProperties, overlayStyle: null };
 
   const handleEdit = () => {
     if (!current) return;
@@ -108,12 +117,7 @@ export default function Image({ imageId, editable = false, meta, onUpdated }: Pr
         className="absolute inset-0 w-full h-full"
         style={imgStyle}
       />
-      {current?.overlayColor && (
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ backgroundColor: current.overlayColor, opacity: 0.25 }}
-        />
-      )}
+      {overlayStyle && <div style={overlayStyle} />}
       {editable && current && (
         <button
           type="button"

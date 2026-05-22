@@ -1,13 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useEditor, EditorContent, type Editor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import TextAlign from "@tiptap/extension-text-align";
-import { TextStyle, FontFamily } from "@tiptap/extension-text-style";
-import { Color } from "@tiptap/extension-color";
-import { Highlight } from "@tiptap/extension-highlight";
+import { useRef } from "react";
+import { type Editor } from "@tiptap/react";
 import { useApp } from "@/framework/ui/context/AppContext";
+import { ToolbarButton, Divider } from "./ToolbarButton";
+import LinkDialog from "./LinkDialog";
 import {
   Bold,
   Italic,
@@ -26,15 +23,17 @@ import {
   Undo2,
   Redo2,
   Highlighter,
-  X,
+  Check,
+  X as XIcon,
+  Code2,
+  ImagePlus,
 } from "lucide-react";
 
-type Props = {
-  value?: string;
-  onChange?: (html: string) => void;
-  placeholder?: string;
-  className?: string;
-  minHeight?: number | string;
+const normalizeHref = (raw: string): string => {
+  const href = raw.trim();
+  if (!href) return href;
+  if (/^(https?:|mailto:|tel:|ftp:|\/|#)/i.test(href)) return href;
+  return `https://${href}`;
 };
 
 const FONT_OPTIONS: { label: string; value: string }[] = [
@@ -46,111 +45,30 @@ const FONT_OPTIONS: { label: string; value: string }[] = [
   { label: "Comic Sans", value: "'Comic Sans MS', cursive" },
 ];
 
-function ToolbarButton({
-  onClick,
-  active,
-  disabled,
-  label,
-  children,
-}: {
-  onClick: () => void;
-  active?: boolean;
-  disabled?: boolean;
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      aria-label={label}
-      title={label}
-      className={`w-8 h-8 flex items-center justify-center rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
-        active ? "bg-blue-100 text-blue-700" : "text-gray-700 hover:bg-gray-100"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
-
-function Divider() {
-  return <div className="w-px h-6 bg-gray-200 mx-0.5 self-center" />;
-}
-
-function LinkDialog({
-  initialLabel,
-  initialHref,
+export default function Toolbar({
+  editor,
   onSave,
   onCancel,
+  isHtmlMode = false,
+  onToggleHtmlMode,
+  onPickImage,
 }: {
-  initialLabel: string;
-  initialHref: string;
-  onSave: (label: string, href: string) => void;
-  onCancel: () => void;
+  editor: Editor;
+  onSave?: () => void;
+  onCancel?: () => void;
+  isHtmlMode?: boolean;
+  onToggleHtmlMode?: () => void;
+  onPickImage?: (file: File) => void;
 }) {
-  const [label, setLabel] = useState(initialLabel);
-  const [href, setHref] = useState(initialHref);
-
-  const submit = () => {
-    const trimmedHref = href.trim();
-    if (!trimmedHref) return;
-    onSave(label.trim(), trimmedHref);
-  };
-
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-gray-700">Text to display</label>
-        <input
-          type="text"
-          value={label}
-          onChange={(e) => setLabel(e.target.value)}
-          placeholder="Link text"
-          autoFocus
-          className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-gray-700">URL</label>
-        <input
-          type="url"
-          value={href}
-          onChange={(e) => setHref(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              submit();
-            }
-          }}
-          placeholder="https://example.com"
-          className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-      </div>
-      <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-3 py-2 text-sm rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          onClick={submit}
-          disabled={!href.trim()}
-          className="px-3 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
-        >
-          Insert
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function Toolbar({ editor }: { editor: Editor }) {
   const { openModal, closeModal } = useApp();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImagePick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (e.target) e.target.value = "";
+    if (!file || !onPickImage) return;
+    onPickImage(file);
+  };
 
   const currentHeading = editor.isActive("heading", { level: 1 })
     ? "h1"
@@ -187,7 +105,6 @@ function Toolbar({ editor }: { editor: Editor }) {
     let labelTo = to;
 
     if (inLink) {
-      // Expand range to the full link mark so we can read its full text.
       const $pos = editor.state.doc.resolve(from);
       const linkMark = $pos.marks().find((m) => m.type.name === "link");
       if (linkMark) {
@@ -212,7 +129,8 @@ function Toolbar({ editor }: { editor: Editor }) {
         initialLabel={initialLabel}
         initialHref={currentHref}
         onCancel={closeModal}
-        onSave={(label, href) => {
+        onSave={(label, rawHref) => {
+          const href = normalizeHref(rawHref);
           const text = label || href;
           const linkNode = {
             type: "text" as const,
@@ -254,6 +172,44 @@ function Toolbar({ editor }: { editor: Editor }) {
       "Insert link"
     );
   };
+
+  if (isHtmlMode) {
+    return (
+      <div className="sticky top-0 z-10 flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-gray-200 bg-white">
+        {onToggleHtmlMode && (
+          <ToolbarButton onClick={onToggleHtmlMode} active label="Exit HTML mode">
+            <Code2 size={16} />
+          </ToolbarButton>
+        )}
+        <span className="ml-2 text-xs text-gray-500">HTML source</span>
+
+        {(onSave || onCancel) && (
+          <div className="ml-auto flex items-center gap-1.5 pl-2">
+            {onCancel && (
+              <button
+                type="button"
+                onClick={onCancel}
+                className="h-8 px-2.5 inline-flex items-center gap-1 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                <XIcon size={14} />
+                <span>Cancel</span>
+              </button>
+            )}
+            {onSave && (
+              <button
+                type="button"
+                onClick={onSave}
+                className="h-8 px-2.5 inline-flex items-center gap-1 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
+              >
+                <Check size={14} />
+                <span>Save</span>
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="sticky top-0 z-10 flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-gray-200 bg-white">
@@ -434,143 +390,53 @@ function Toolbar({ editor }: { editor: Editor }) {
       <ToolbarButton onClick={openLinkModal} active={editor.isActive("link")} label="Link">
         <LinkIcon size={16} />
       </ToolbarButton>
-    </div>
-  );
-}
-
-export default function RichTextEditor({
-  value,
-  onChange,
-  placeholder,
-  className,
-  minHeight = 240,
-}: Props) {
-  const editor = useEditor({
-    immediatelyRender: false,
-    extensions: [
-      StarterKit.configure({
-        link: { openOnClick: false, autolink: true },
-      }),
-      TextAlign.configure({ types: ["heading", "paragraph"] }),
-      TextStyle,
-      FontFamily,
-      Color,
-      Highlight,
-    ],
-    content: value ?? "",
-    onUpdate: ({ editor }) => onChange?.(editor.getHTML()),
-    editorProps: {
-      attributes: {
-        class: "tiptap-content focus:outline-none px-4 py-3",
-        "data-placeholder": placeholder ?? "",
-      },
-    },
-  });
-
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const closeTimerRef = useRef<number | null>(null);
-  const [hoveredLink, setHoveredLink] = useState<{
-    el: HTMLAnchorElement;
-    rect: DOMRect;
-  } | null>(null);
-
-  const cancelClose = useCallback(() => {
-    if (closeTimerRef.current !== null) {
-      window.clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
-    }
-  }, []);
-
-  const scheduleClose = useCallback(() => {
-    cancelClose();
-    closeTimerRef.current = window.setTimeout(() => setHoveredLink(null), 150);
-  }, [cancelClose]);
-
-  useEffect(() => {
-    const wrapper = wrapperRef.current;
-    if (!wrapper || !editor) return;
-
-    const onMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
-      const link = target?.closest("a") as HTMLAnchorElement | null;
-      if (link && wrapper.contains(link)) {
-        cancelClose();
-        setHoveredLink({ el: link, rect: link.getBoundingClientRect() });
-      }
-    };
-
-    const onMouseOut = (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
-      const link = target?.closest("a");
-      if (!link) return;
-      const related = e.relatedTarget as HTMLElement | null;
-      if (!related || (!link.contains(related) && !related.closest?.("[data-link-remove]"))) {
-        scheduleClose();
-      }
-    };
-
-    const clear = () => setHoveredLink(null);
-
-    wrapper.addEventListener("mouseover", onMouseOver);
-    wrapper.addEventListener("mouseout", onMouseOut);
-    window.addEventListener("scroll", clear, true);
-    window.addEventListener("resize", clear);
-    return () => {
-      wrapper.removeEventListener("mouseover", onMouseOver);
-      wrapper.removeEventListener("mouseout", onMouseOut);
-      window.removeEventListener("scroll", clear, true);
-      window.removeEventListener("resize", clear);
-    };
-  }, [editor, cancelClose, scheduleClose]);
-
-  const removeHoveredLink = () => {
-    if (!editor || !hoveredLink) return;
-    const pos = editor.view.posAtDOM(hoveredLink.el, 0);
-    if (pos == null || pos < 0) return;
-    editor
-      .chain()
-      .focus()
-      .setTextSelection(pos)
-      .extendMarkRange("link")
-      .unsetLink()
-      .run();
-    setHoveredLink(null);
-  };
-
-  if (!editor) return null;
-
-  return (
-    <>
-      <div
-        ref={wrapperRef}
-        className={`border border-gray-200 rounded-lg bg-white shadow-sm overflow-hidden flex flex-col ${className ?? ""}`}
-      >
-        <Toolbar editor={editor} />
-        <div
-          className="overflow-auto"
-          style={{ minHeight: typeof minHeight === "number" ? `${minHeight}px` : minHeight }}
-        >
-          <EditorContent editor={editor} />
-        </div>
-      </div>
-      {hoveredLink && (
-        <button
-          type="button"
-          data-link-remove="true"
-          onMouseEnter={cancelClose}
-          onMouseLeave={scheduleClose}
-          onClick={removeHoveredLink}
-          aria-label="Remove link"
-          title="Remove link"
-          className="fixed z-50 w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center shadow-md hover:bg-red-600"
-          style={{
-            top: hoveredLink.rect.top - 8,
-            left: hoveredLink.rect.right - 6,
-          }}
-        >
-          <X size={12} />
-        </button>
+      {onPickImage && (
+        <>
+          <ToolbarButton
+            onClick={() => fileInputRef.current?.click()}
+            label="Insert image"
+          >
+            <ImagePlus size={16} />
+          </ToolbarButton>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImagePick}
+            className="hidden"
+          />
+        </>
       )}
-    </>
+      {onToggleHtmlMode && (
+        <ToolbarButton onClick={onToggleHtmlMode} label="Edit HTML">
+          <Code2 size={16} />
+        </ToolbarButton>
+      )}
+
+      {(onSave || onCancel) && (
+        <div className="ml-auto flex items-center gap-1.5 pl-2">
+          {onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="h-8 px-2.5 inline-flex items-center gap-1 text-sm rounded border border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              <XIcon size={14} />
+              <span>Cancel</span>
+            </button>
+          )}
+          {onSave && (
+            <button
+              type="button"
+              onClick={onSave}
+              className="h-8 px-2.5 inline-flex items-center gap-1 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
+            >
+              <Check size={14} />
+              <span>Save</span>
+            </button>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

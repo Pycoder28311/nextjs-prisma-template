@@ -85,11 +85,19 @@ model Image {
   alt        String?
 
   blur           Int      @default(0)
-  overlayColor   String?  
+  overlayColor   String?
   objectFit      String   @default("cover")
   positionX      Int      @default(50)
   positionY      Int      @default(50)
   rotate         Int      @default(0)
+
+  scale          Float    @default(1)
+  cropX          Int      @default(0)
+  cropY          Int      @default(0)
+  cropWidth      Int      @default(100)
+  cropHeight     Int      @default(100)
+  flipHorizontal Boolean  @default(false)
+  flipVertical   Boolean  @default(false)
 
   inText         Boolean  @default(false)
   createdAt      DateTime @default(now())

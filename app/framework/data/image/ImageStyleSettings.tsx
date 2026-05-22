@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { RotateCcw, FlipHorizontal2, FlipVertical2 } from "lucide-react";
 import { useApp } from "@/framework/ui/context/AppContext";
 
 export type ObjectFit = "cover" | "contain" | "fill" | "none" | "scale-down";
@@ -12,6 +13,13 @@ export type StyleValues = {
   positionX: number;
   positionY: number;
   rotate: number;
+  scale: number;
+  cropX: number;
+  cropY: number;
+  cropWidth: number;
+  cropHeight: number;
+  flipHorizontal: boolean;
+  flipVertical: boolean;
 };
 
 export const DEFAULT_IMAGE_STYLE: StyleValues = {
@@ -21,6 +29,13 @@ export const DEFAULT_IMAGE_STYLE: StyleValues = {
   positionX: 50,
   positionY: 50,
   rotate: 0,
+  scale: 1,
+  cropX: 0,
+  cropY: 0,
+  cropWidth: 100,
+  cropHeight: 100,
+  flipHorizontal: false,
+  flipVertical: false,
 };
 
 const OBJECT_FIT_OPTIONS: ObjectFit[] = ["cover", "contain", "fill", "none", "scale-down"];
@@ -30,6 +45,11 @@ const OBJECT_FIT_OPTIONS: ObjectFit[] = ["cover", "contain", "fill", "none", "sc
 function clampInt(raw: number, min: number, max: number, fallback: number): number {
   if (Number.isNaN(raw) || !Number.isFinite(raw)) return fallback;
   return Math.min(max, Math.max(min, Math.round(raw)));
+}
+
+function clampFloat(raw: number, min: number, max: number, fallback: number): number {
+  if (Number.isNaN(raw) || !Number.isFinite(raw)) return fallback;
+  return Math.min(max, Math.max(min, raw));
 }
 
 /**
@@ -56,11 +76,24 @@ export function applyImageStyle(values: StyleValues): {
   imgStyle: React.CSSProperties;
   overlayStyle: React.CSSProperties | null;
 } {
+  const sx = values.scale * (values.flipHorizontal ? -1 : 1);
+  const sy = values.scale * (values.flipVertical ? -1 : 1);
+  const transforms: string[] = [];
+  if (values.rotate) transforms.push(`rotate(${values.rotate}deg)`);
+  if (sx !== 1 || sy !== 1) transforms.push(`scale(${sx}, ${sy})`);
+
+  const top = Math.max(0, values.cropY);
+  const left = Math.max(0, values.cropX);
+  const right = Math.max(0, 100 - (values.cropX + values.cropWidth));
+  const bottom = Math.max(0, 100 - (values.cropY + values.cropHeight));
+  const hasCrop = top || left || right || bottom;
+
   const imgStyle: React.CSSProperties = {
     filter: values.blur > 0 ? `blur(${values.blur}px)` : undefined,
     objectFit: values.objectFit,
     objectPosition: `${values.positionX}% ${values.positionY}%`,
-    transform: values.rotate ? `rotate(${values.rotate}deg)` : undefined,
+    transform: transforms.length ? transforms.join(" ") : undefined,
+    clipPath: hasCrop ? `inset(${top}% ${right}% ${bottom}% ${left}%)` : undefined,
     width: "100%",
     height: "100%",
   };
@@ -108,6 +141,13 @@ export async function saveImageStyle(id: number, values: StyleValues): Promise<v
         positionX: values.positionX,
         positionY: values.positionY,
         rotate: values.rotate,
+        scale: values.scale,
+        cropX: values.cropX,
+        cropY: values.cropY,
+        cropWidth: values.cropWidth,
+        cropHeight: values.cropHeight,
+        flipHorizontal: values.flipHorizontal,
+        flipVertical: values.flipVertical,
       },
     }),
   });
@@ -124,27 +164,62 @@ const rangeClass =
   "w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600";
 const sectionClass = "flex flex-col gap-1.5";
 
+function ResetButton({
+  onClick,
+  disabled,
+  title = "Reset to default",
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+  title?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      title={title}
+      aria-label={title}
+      className="w-5 h-5 flex items-center justify-center rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+    >
+      <RotateCcw size={12} />
+    </button>
+  );
+}
+
 function SliderRow({
   label,
   value,
   min,
   max,
+  step,
   suffix,
   onChange,
+  onReset,
+  isDefault,
+  format,
 }: {
   label: string;
   value: number;
   min: number;
   max: number;
+  step?: number;
   suffix: string;
   onChange: (v: number) => void;
+  onReset?: () => void;
+  isDefault?: boolean;
+  format?: (v: number) => string;
 }) {
+  const isFloat = (step ?? 1) < 1;
   return (
     <div className={sectionClass}>
       <div className="flex items-center justify-between">
-        <label className={labelClass}>{label}</label>
+        <div className="flex items-center gap-1.5">
+          <label className={labelClass}>{label}</label>
+          {onReset && <ResetButton onClick={onReset} disabled={isDefault} />}
+        </div>
         <span className="text-xs tabular-nums text-gray-500">
-          {value}
+          {format ? format(value) : value}
           {suffix}
         </span>
       </div>
@@ -152,8 +227,16 @@ function SliderRow({
         type="range"
         min={min}
         max={max}
+        step={step ?? 1}
         value={value}
-        onChange={(e) => onChange(clampInt(Number(e.target.value), min, max, value))}
+        onChange={(e) => {
+          const raw = Number(e.target.value);
+          onChange(
+            isFloat
+              ? clampFloat(raw, min, max, value)
+              : clampInt(raw, min, max, value)
+          );
+        }}
         className={rangeClass}
       />
     </div>
@@ -171,6 +254,40 @@ type PanelProps = {
 export function ImageStyleSettingsPanel({ value, onChange, previewSrc }: PanelProps) {
   const set = <K extends keyof StyleValues>(key: K, v: StyleValues[K]) =>
     onChange({ ...value, [key]: v });
+
+  const reset = <K extends keyof StyleValues>(key: K) =>
+    set(key, DEFAULT_IMAGE_STYLE[key]);
+
+  const isDefault = <K extends keyof StyleValues>(key: K) =>
+    value[key] === DEFAULT_IMAGE_STYLE[key];
+
+  const cropIsDefault =
+    value.cropX === DEFAULT_IMAGE_STYLE.cropX &&
+    value.cropY === DEFAULT_IMAGE_STYLE.cropY &&
+    value.cropWidth === DEFAULT_IMAGE_STYLE.cropWidth &&
+    value.cropHeight === DEFAULT_IMAGE_STYLE.cropHeight;
+
+  const resetCrop = () => {
+    onChange({
+      ...value,
+      cropX: DEFAULT_IMAGE_STYLE.cropX,
+      cropY: DEFAULT_IMAGE_STYLE.cropY,
+      cropWidth: DEFAULT_IMAGE_STYLE.cropWidth,
+      cropHeight: DEFAULT_IMAGE_STYLE.cropHeight,
+    });
+  };
+
+  const flipIsDefault =
+    value.flipHorizontal === DEFAULT_IMAGE_STYLE.flipHorizontal &&
+    value.flipVertical === DEFAULT_IMAGE_STYLE.flipVertical;
+
+  const resetFlip = () => {
+    onChange({
+      ...value,
+      flipHorizontal: DEFAULT_IMAGE_STYLE.flipHorizontal,
+      flipVertical: DEFAULT_IMAGE_STYLE.flipVertical,
+    });
+  };
 
   const { imgStyle, overlayStyle } = applyImageStyle(value);
 
@@ -196,6 +313,21 @@ export function ImageStyleSettingsPanel({ value, onChange, previewSrc }: PanelPr
         max={20}
         suffix="px"
         onChange={(v) => set("blur", v)}
+        onReset={() => reset("blur")}
+        isDefault={isDefault("blur")}
+      />
+
+      <SliderRow
+        label="Scale"
+        value={value.scale}
+        min={0.1}
+        max={4}
+        step={0.05}
+        suffix="x"
+        format={(v) => v.toFixed(2)}
+        onChange={(v) => set("scale", v)}
+        onReset={() => reset("scale")}
+        isDefault={isDefault("scale")}
       />
 
       <SliderRow
@@ -205,6 +337,8 @@ export function ImageStyleSettingsPanel({ value, onChange, previewSrc }: PanelPr
         max={100}
         suffix="%"
         onChange={(v) => set("positionX", v)}
+        onReset={() => reset("positionX")}
+        isDefault={isDefault("positionX")}
       />
 
       <SliderRow
@@ -214,6 +348,8 @@ export function ImageStyleSettingsPanel({ value, onChange, previewSrc }: PanelPr
         max={100}
         suffix="%"
         onChange={(v) => set("positionY", v)}
+        onReset={() => reset("positionY")}
+        isDefault={isDefault("positionY")}
       />
 
       <SliderRow
@@ -223,10 +359,95 @@ export function ImageStyleSettingsPanel({ value, onChange, previewSrc }: PanelPr
         max={360}
         suffix="°"
         onChange={(v) => set("rotate", v)}
+        onReset={() => reset("rotate")}
+        isDefault={isDefault("rotate")}
       />
 
       <div className={sectionClass}>
-        <label className={labelClass}>Object fit</label>
+        <div className="flex items-center gap-1.5">
+          <label className={labelClass}>Flip</label>
+          <ResetButton onClick={resetFlip} disabled={flipIsDefault} />
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => set("flipHorizontal", !value.flipHorizontal)}
+            className={`flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-sm rounded-md border ${
+              value.flipHorizontal
+                ? "border-blue-500 bg-blue-50 text-blue-700"
+                : "border-gray-300 text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            <FlipHorizontal2 size={14} />
+            <span>Horizontal</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => set("flipVertical", !value.flipVertical)}
+            className={`flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 text-sm rounded-md border ${
+              value.flipVertical
+                ? "border-blue-500 bg-blue-50 text-blue-700"
+                : "border-gray-300 text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            <FlipVertical2 size={14} />
+            <span>Vertical</span>
+          </button>
+        </div>
+      </div>
+
+      <div className={sectionClass}>
+        <div className="flex items-center gap-1.5">
+          <label className={labelClass}>Crop</label>
+          <ResetButton onClick={resetCrop} disabled={cropIsDefault} />
+        </div>
+        <SliderRow
+          label="Left"
+          value={value.cropX}
+          min={0}
+          max={Math.max(0, 100 - value.cropWidth)}
+          suffix="%"
+          onChange={(v) => set("cropX", v)}
+          onReset={() => reset("cropX")}
+          isDefault={isDefault("cropX")}
+        />
+        <SliderRow
+          label="Top"
+          value={value.cropY}
+          min={0}
+          max={Math.max(0, 100 - value.cropHeight)}
+          suffix="%"
+          onChange={(v) => set("cropY", v)}
+          onReset={() => reset("cropY")}
+          isDefault={isDefault("cropY")}
+        />
+        <SliderRow
+          label="Width"
+          value={value.cropWidth}
+          min={1}
+          max={100 - value.cropX}
+          suffix="%"
+          onChange={(v) => set("cropWidth", v)}
+          onReset={() => reset("cropWidth")}
+          isDefault={isDefault("cropWidth")}
+        />
+        <SliderRow
+          label="Height"
+          value={value.cropHeight}
+          min={1}
+          max={100 - value.cropY}
+          suffix="%"
+          onChange={(v) => set("cropHeight", v)}
+          onReset={() => reset("cropHeight")}
+          isDefault={isDefault("cropHeight")}
+        />
+      </div>
+
+      <div className={sectionClass}>
+        <div className="flex items-center gap-1.5">
+          <label className={labelClass}>Object fit</label>
+          <ResetButton onClick={() => reset("objectFit")} disabled={isDefault("objectFit")} />
+        </div>
         <select
           value={value.objectFit}
           onChange={(e) => set("objectFit", e.target.value as ObjectFit)}
@@ -241,7 +462,13 @@ export function ImageStyleSettingsPanel({ value, onChange, previewSrc }: PanelPr
       </div>
 
       <div className={sectionClass}>
-        <label className={labelClass}>Overlay color</label>
+        <div className="flex items-center gap-1.5">
+          <label className={labelClass}>Overlay color</label>
+          <ResetButton
+            onClick={() => reset("overlayColor")}
+            disabled={isDefault("overlayColor")}
+          />
+        </div>
         <div className="flex items-center gap-2">
           <input
             type="color"

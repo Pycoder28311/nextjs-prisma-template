@@ -9,7 +9,7 @@ import DataForm from "@/framework/data/DataForm";
 import GridLayout from "@/framework/data/GridLayout";
 import ImageUpload from "@/framework/data/image/ImageUpload";
 import ImageGallery from "@/framework/data/image/ImageGallery";
-import RichTextEditor from "@/framework/data/RichTextEditor";
+import RichTextEditor from "@/framework/ui/RichTextEditor";
 import ProductCard from "@/components/ProductCard";
 import CrudButton from "@/framework/data/buttons/CrudButton";
 import EditInput from "@/framework/data/EditInput";

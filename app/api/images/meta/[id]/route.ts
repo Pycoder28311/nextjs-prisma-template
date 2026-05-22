@@ -22,6 +22,13 @@ export async function GET(_req: Request, { params }: RouteContext) {
       positionX: true,
       positionY: true,
       rotate: true,
+      scale: true,
+      cropX: true,
+      cropY: true,
+      cropWidth: true,
+      cropHeight: true,
+      flipHorizontal: true,
+      flipVertical: true,
       createdAt: true,
     },
   });
