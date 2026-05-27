@@ -319,34 +319,54 @@ export default function Toolbar({
 
       <Divider />
 
-      <ToolbarButton
-        onClick={() => editor.chain().focus().setTextAlign("left").run()}
-        active={editor.isActive({ textAlign: "left" })}
-        label="Align left"
-      >
-        <AlignLeft size={16} />
-      </ToolbarButton>
-      <ToolbarButton
-        onClick={() => editor.chain().focus().setTextAlign("center").run()}
-        active={editor.isActive({ textAlign: "center" })}
-        label="Align center"
-      >
-        <AlignCenter size={16} />
-      </ToolbarButton>
-      <ToolbarButton
-        onClick={() => editor.chain().focus().setTextAlign("right").run()}
-        active={editor.isActive({ textAlign: "right" })}
-        label="Align right"
-      >
-        <AlignRight size={16} />
-      </ToolbarButton>
-      <ToolbarButton
-        onClick={() => editor.chain().focus().setTextAlign("justify").run()}
-        active={editor.isActive({ textAlign: "justify" })}
-        label="Justify"
-      >
-        <AlignJustify size={16} />
-      </ToolbarButton>
+      {(() => {
+        const imageSelected = editor.isActive("image");
+        const imageAlign = imageSelected
+          ? ((editor.getAttributes("image").align as string | null) ?? null)
+          : null;
+        const setAlign = (next: "left" | "center" | "right") => {
+          if (imageSelected) {
+            editor.chain().focus().updateAttributes("image", { align: next }).run();
+          } else {
+            editor.chain().focus().setTextAlign(next).run();
+          }
+        };
+        const isAlignActive = (dir: "left" | "center" | "right") =>
+          imageSelected ? imageAlign === dir : editor.isActive({ textAlign: dir });
+        return (
+          <>
+            <ToolbarButton
+              onClick={() => setAlign("left")}
+              active={isAlignActive("left")}
+              label={imageSelected ? "Align image left" : "Align left"}
+            >
+              <AlignLeft size={16} />
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() => setAlign("center")}
+              active={isAlignActive("center")}
+              label={imageSelected ? "Align image center" : "Align center"}
+            >
+              <AlignCenter size={16} />
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() => setAlign("right")}
+              active={isAlignActive("right")}
+              label={imageSelected ? "Align image right" : "Align right"}
+            >
+              <AlignRight size={16} />
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() => editor.chain().focus().setTextAlign("justify").run()}
+              active={!imageSelected && editor.isActive({ textAlign: "justify" })}
+              disabled={imageSelected}
+              label="Justify"
+            >
+              <AlignJustify size={16} />
+            </ToolbarButton>
+          </>
+        );
+      })()}
 
       <Divider />
 

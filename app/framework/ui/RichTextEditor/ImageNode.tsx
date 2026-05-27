@@ -15,8 +15,6 @@ import {
   type StyleValues,
 } from "@/framework/data/image/ImageStyleSettings";
 
-type Position = { x: number; y: number };
-
 function parseStyleData(raw: unknown): StyleValues | null {
   if (!raw) return null;
   if (typeof raw === "object") return raw as StyleValues;
@@ -26,13 +24,6 @@ function parseStyleData(raw: unknown): StyleValues | null {
   } catch {
     return null;
   }
-}
-
-function parsePosition(x: unknown, y: unknown): Position | null {
-  const px = typeof x === "number" ? x : x != null ? parseFloat(String(x)) : NaN;
-  const py = typeof y === "number" ? y : y != null ? parseFloat(String(y)) : NaN;
-  if (Number.isFinite(px) && Number.isFinite(py)) return { x: px, y: py };
-  return null;
 }
 
 function styleObjectToString(style: React.CSSProperties): string {
@@ -49,9 +40,38 @@ function styleObjectToString(style: React.CSSProperties): string {
     .join("; ");
 }
 
-function findEditorRoot(el: HTMLElement | null): HTMLElement | null {
-  if (!el) return null;
-  return (el.closest(".tiptap-content") as HTMLElement | null) ?? (el.closest(".ProseMirror") as HTMLElement | null);
+function buildEditorImgStyle(
+  values: StyleValues,
+  natural: { w: number; h: number } | null
+): React.CSSProperties {
+  const transforms: string[] = [];
+  if (values.rotate) transforms.push(`rotate(${values.rotate}deg)`);
+  if (values.flipHorizontal || values.flipVertical) {
+    const fx = values.flipHorizontal ? -1 : 1;
+    const fy = values.flipVertical ? -1 : 1;
+    transforms.push(`scale(${fx}, ${fy})`);
+  }
+
+  const top = Math.max(0, values.cropY);
+  const left = Math.max(0, values.cropX);
+  const right = Math.max(0, 100 - (values.cropX + values.cropWidth));
+  const bottom = Math.max(0, 100 - (values.cropY + values.cropHeight));
+  const hasCrop = top || left || right || bottom;
+
+  const scaledW = natural ? natural.w * values.scale : null;
+  const scaledH = natural ? natural.h * values.scale : null;
+
+  return {
+    filter: values.blur > 0 ? `blur(${values.blur}px)` : undefined,
+    objectFit: values.objectFit,
+    objectPosition: `${values.positionX}% ${values.positionY}%`,
+    transform: transforms.length ? transforms.join(" ") : undefined,
+    clipPath: hasCrop
+      ? `inset(${top}% ${right}% ${bottom}% ${left}%)`
+      : undefined,
+    width: scaledW !== null ? `${scaledW}px` : undefined,
+    height: scaledH !== null ? `${scaledH}px` : undefined,
+  };
 }
 
 function ImageNodeView({
@@ -64,49 +84,73 @@ function ImageNodeView({
   const { open } = useImageStyleModal();
   const stored = parseStyleData(node.attrs.styleData);
   const values: StyleValues = stored ?? DEFAULT_IMAGE_STYLE;
-  const { imgStyle, overlayStyle } = applyImageStyle(values);
-
-  const visualStyle: React.CSSProperties = {
-    ...imgStyle,
-    width: undefined,
-    height: undefined,
-  };
-
-  const storedPosition = parsePosition(node.attrs.posX, node.attrs.posY);
-  const [livePos, setLivePos] = useState<Position | null>(null);
-  const effective = livePos ?? storedPosition;
 
   const imgRef = useRef<HTMLImageElement>(null);
+  const [naturalSize, setNaturalSize] = useState<{ w: number; h: number } | null>(null);
+  const [isEditable, setIsEditable] = useState<boolean>(editor.isEditable);
 
   useEffect(() => {
-    if (!effective) return;
-    const imgEl = imgRef.current;
-    const editorRoot = findEditorRoot(imgEl);
-    if (!imgEl || !editorRoot) return;
+    const sync = () => setIsEditable(editor.isEditable);
+    sync();
+    editor.on("update", sync);
+    editor.on("transaction", sync);
+    return () => {
+      editor.off("update", sync);
+      editor.off("transaction", sync);
+    };
+  }, [editor]);
 
-    const grow = () => {
-      const imgH = imgEl.offsetHeight;
-      if (!imgH) return;
-      const required = effective.y + imgH;
-      const currentMin = parseFloat(editorRoot.style.minHeight || "0") || 0;
-      if (required > currentMin) {
-        editorRoot.style.minHeight = `${required}px`;
+  useEffect(() => {
+    const img = imgRef.current;
+    if (!img) return;
+    const apply = () => {
+      if (img.naturalWidth && img.naturalHeight) {
+        setNaturalSize({ w: img.naturalWidth, h: img.naturalHeight });
       }
     };
-
-    if (imgEl.complete) {
-      grow();
+    if (img.complete) {
+      apply();
       return;
     }
-    imgEl.addEventListener("load", grow, { once: true });
-    return () => imgEl.removeEventListener("load", grow);
-  }, [effective?.y]);
+    img.addEventListener("load", apply);
+    return () => img.removeEventListener("load", apply);
+  }, [node.attrs.src]);
+
+  const visualStyle = buildEditorImgStyle(values, naturalSize);
+
+  const overlayStyle: React.CSSProperties | null = values.overlayColor
+    ? {
+        position: "absolute",
+        inset: 0,
+        backgroundColor: values.overlayColor,
+        opacity: 0.25,
+        pointerEvents: "none",
+      }
+    : null;
 
   const src = node.attrs.src as string;
   const alt = (node.attrs.alt as string | null) ?? "";
   const title = (node.attrs.title as string | null) ?? undefined;
+  const align = node.attrs.align as "left" | "center" | "right" | null;
 
-  const showControls = editor.isEditable && selected;
+  const showControls = isEditable;
+
+  const wrapperClassName = "relative max-w-full my-2";
+  const wrapperStyle: React.CSSProperties =
+    align === "left"
+      ? { display: "block", float: "left", marginRight: "1rem", clear: "none" }
+      : align === "right"
+      ? { display: "block", float: "right", marginLeft: "1rem", clear: "none" }
+      : align === "center"
+      ? {
+          display: "block",
+          float: "none",
+          width: "fit-content",
+          maxWidth: "100%",
+          marginLeft: "auto",
+          marginRight: "auto",
+        }
+      : { display: "inline-block", verticalAlign: "top" };
 
   const handleEdit = () => {
     open({
@@ -117,133 +161,57 @@ function ImageNodeView({
     });
   };
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!editor.isEditable) return;
-    if (e.button !== 0) return;
-    e.preventDefault();
-
-    const imgEl = imgRef.current;
-    const editorRoot = findEditorRoot(imgEl);
-
-    let baseX: number;
-    let baseY: number;
-    if (storedPosition) {
-      baseX = storedPosition.x;
-      baseY = storedPosition.y;
-    } else if (imgEl && editorRoot) {
-      const imgRect = imgEl.getBoundingClientRect();
-      const rootRect = editorRoot.getBoundingClientRect();
-      baseX = imgRect.left - rootRect.left + editorRoot.scrollLeft;
-      baseY = imgRect.top - rootRect.top + editorRoot.scrollTop;
-    } else {
-      baseX = 0;
-      baseY = 0;
-    }
-
-    const startMouseX = e.clientX;
-    const startMouseY = e.clientY;
-
-    const clamp = (rawX: number, rawY: number): Position => {
-      if (!imgEl || !editorRoot) return { x: rawX, y: rawY };
-      const imgW = imgEl.offsetWidth;
-      const maxX = Math.max(0, editorRoot.clientWidth - imgW);
-      return {
-        x: Math.min(maxX, Math.max(0, rawX)),
-        y: Math.max(0, rawY),
-      };
-    };
-
-    const onMove = (ev: MouseEvent) => {
-      setLivePos(
-        clamp(baseX + ev.clientX - startMouseX, baseY + ev.clientY - startMouseY)
-      );
-    };
-    const onUp = (ev: MouseEvent) => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseup", onUp);
-      const final = clamp(
-        baseX + ev.clientX - startMouseX,
-        baseY + ev.clientY - startMouseY
-      );
-      updateAttributes({ posX: final.x, posY: final.y });
-      setLivePos(null);
-    };
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-  };
-
-  const wrapperStyle: React.CSSProperties = effective
-    ? {
-        position: "absolute",
-        left: `${effective.x}px`,
-        top: `${effective.y}px`,
-        zIndex: 10,
-      }
-    : {};
-
-  const wrapperClassName = effective
-    ? "inline-block max-w-full align-top"
-    : "relative inline-block max-w-full my-2 align-top";
-
   return (
     <NodeViewWrapper className={wrapperClassName} style={wrapperStyle}>
-      <span className="relative inline-block">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          ref={imgRef}
-          src={src}
-          alt={alt}
-          title={title}
-          draggable={false}
-          onMouseDown={handleMouseDown}
-          style={visualStyle}
-          className={`max-w-full h-auto select-none ${
-            editor.isEditable ? "cursor-move" : ""
-          } ${selected ? "ring-2 ring-blue-500 ring-offset-2" : ""}`}
-        />
-        {overlayStyle && (
-          <span aria-hidden="true" style={overlayStyle as React.CSSProperties} />
-        )}
-        {showControls && (
-          <div
-            contentEditable={false}
-            className="absolute top-1 right-1 z-10 flex items-center gap-1 bg-white/95 backdrop-blur shadow-md border border-gray-200 rounded-md px-1 py-0.5"
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        ref={imgRef}
+        src={src}
+        alt={alt}
+        title={title}
+        data-drag-handle
+        data-style={stored ? JSON.stringify(stored) : undefined}
+        data-align={align ?? undefined}
+        style={visualStyle}
+        className={`max-w-full h-auto ${
+          isEditable ? "cursor-move" : ""
+        } ${selected ? "ring-2 ring-blue-500 ring-offset-2" : ""}`}
+      />
+      {overlayStyle && (
+        <span aria-hidden="true" style={overlayStyle as React.CSSProperties} />
+      )}
+      {showControls && (
+        <div
+          contentEditable={false}
+          className="absolute top-1 right-1 z-10 flex items-center gap-1 bg-white/95 backdrop-blur shadow-md border border-gray-200 rounded-md px-1 py-0.5"
+        >
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={handleEdit}
+            title="Edit image style"
+            aria-label="Edit image style"
+            className="w-7 h-7 inline-flex items-center justify-center rounded text-gray-700 hover:bg-gray-100"
           >
-            <button
-              type="button"
-              onMouseDown={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-              onClick={handleEdit}
-              title="Edit image style"
-              aria-label="Edit image style"
-              className="w-7 h-7 inline-flex items-center justify-center rounded text-gray-700 hover:bg-gray-100"
-            >
-              <Pencil size={14} />
-            </button>
-            <button
-              type="button"
-              onMouseDown={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-              onClick={() => deleteNode()}
-              title="Remove image"
-              aria-label="Remove image"
-              className="w-7 h-7 inline-flex items-center justify-center rounded text-red-600 hover:bg-red-50"
-            >
-              <Trash2 size={14} />
-            </button>
-          </div>
-        )}
-      </span>
+            <Pencil size={14} />
+          </button>
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => deleteNode()}
+            title="Remove image"
+            aria-label="Remove image"
+            className="w-7 h-7 inline-flex items-center justify-center rounded text-red-600 hover:bg-red-50"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      )}
     </NodeViewWrapper>
   );
 }
 
 export const ImageWithStyle = Image.extend({
-  draggable: false,
   addAttributes() {
     return {
       ...this.parent?.(),
@@ -264,35 +232,16 @@ export const ImageWithStyle = Image.extend({
           };
         },
       },
-      posX: {
+      align: {
         default: null,
         parseHTML: (element) => {
-          const raw = element.getAttribute("data-pos-x");
-          if (raw === null) return null;
-          const v = parseFloat(raw);
-          return Number.isFinite(v) ? v : null;
+          const v = element.getAttribute("data-align");
+          if (v === "left" || v === "center" || v === "right") return v;
+          return null;
         },
         renderHTML: (attrs) => {
-          const v = attrs.posX;
-          if (v === null || v === undefined) return {};
-          return { "data-pos-x": String(v) };
-        },
-      },
-      posY: {
-        default: null,
-        parseHTML: (element) => {
-          const raw = element.getAttribute("data-pos-y");
-          if (raw === null) return null;
-          const v = parseFloat(raw);
-          return Number.isFinite(v) ? v : null;
-        },
-        renderHTML: (attrs) => {
-          const pos = parsePosition(attrs.posX, attrs.posY);
-          if (!pos) return {};
-          return {
-            "data-pos-y": String(pos.y),
-            style: `position:absolute;left:${pos.x}px;top:${pos.y}px;z-index:10`,
-          };
+          if (!attrs.align) return {};
+          return { "data-align": attrs.align };
         },
       },
     };
