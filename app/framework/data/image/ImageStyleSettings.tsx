@@ -543,7 +543,7 @@ function ImageStyleModalBody({
   const effectivePreview = newFileUrl ?? previewSrc;
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5 max-h-[80vh] overflow-y-auto md:py-4">
       {allowFileReplace && (
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-gray-700">Replace image file</label>

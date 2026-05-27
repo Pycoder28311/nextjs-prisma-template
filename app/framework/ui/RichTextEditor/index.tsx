@@ -7,10 +7,10 @@ import TextAlign from "@tiptap/extension-text-align";
 import { TextStyle, FontFamily } from "@tiptap/extension-text-style";
 import { Color } from "@tiptap/extension-color";
 import { Highlight } from "@tiptap/extension-highlight";
-import Image from "@tiptap/extension-image";
 import { Pencil } from "lucide-react";
 import Toolbar from "./Toolbar";
 import LinkHoverOverlay from "./LinkHoverOverlay";
+import { ImageWithStyle } from "./ImageNode";
 
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -46,7 +46,9 @@ export default function RichTextEditor({
   const [isEditing, setIsEditing] = useState(liveMode);
   const [isHtmlMode, setIsHtmlMode] = useState(false);
   const [htmlDraft, setHtmlDraft] = useState("");
+  const [userHeight, setUserHeight] = useState<number | null>(null);
   const snapshotRef = useRef<string>(value ?? "");
+  const contentBoxRef = useRef<HTMLDivElement>(null);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -63,12 +65,12 @@ export default function RichTextEditor({
       FontFamily,
       Color,
       Highlight,
-      Image.configure({ inline: false, allowBase64: true }),
+      ImageWithStyle.configure({ inline: false, allowBase64: true }),
     ],
     content: value ?? "",
     editorProps: {
       attributes: {
-        class: "tiptap-content focus:outline-none",
+        class: "tiptap-content focus:outline-none relative",
         "data-placeholder": placeholder ?? "",
       },
     },
@@ -183,8 +185,16 @@ export default function RichTextEditor({
           </button>
         )}
         <div
+          ref={contentBoxRef}
           className={chromeOn ? "overflow-auto" : ""}
-          style={chromeOn ? { minHeight: typeof minHeight === "number" ? `${minHeight}px` : minHeight } : undefined}
+          style={
+            chromeOn
+              ? {
+                  minHeight: typeof minHeight === "number" ? `${minHeight}px` : minHeight,
+                  ...(userHeight !== null ? { height: `${userHeight}px` } : {}),
+                }
+              : undefined
+          }
         >
           <div className={contentPadding}>
             {isHtmlMode ? (
@@ -202,6 +212,32 @@ export default function RichTextEditor({
             )}
           </div>
         </div>
+        {chromeOn && (
+          <div
+            role="separator"
+            aria-orientation="horizontal"
+            title="Drag to resize"
+            onMouseDown={(e) => {
+              if (e.button !== 0) return;
+              e.preventDefault();
+              const startY = e.clientY;
+              const startHeight = contentBoxRef.current?.offsetHeight ?? 0;
+              const onMove = (ev: MouseEvent) => {
+                const dy = ev.clientY - startY;
+                setUserHeight(Math.max(80, startHeight + dy));
+              };
+              const onUp = () => {
+                window.removeEventListener("mousemove", onMove);
+                window.removeEventListener("mouseup", onUp);
+              };
+              window.addEventListener("mousemove", onMove);
+              window.addEventListener("mouseup", onUp);
+            }}
+            className="h-2 cursor-ns-resize bg-gray-50 hover:bg-gray-200 border-t border-gray-200 flex items-center justify-center select-none"
+          >
+            <div className="w-8 h-0.5 bg-gray-300 rounded" />
+          </div>
+        )}
       </div>
       {isEditing && <LinkHoverOverlay editor={editor} wrapperRef={wrapperRef} />}
     </>
