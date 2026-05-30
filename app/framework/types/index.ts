@@ -6,9 +6,5 @@ export type {
   Email,
   User,
   Image,
-  Product,
-  ProductChild,
-  TestTable,
-  ManyOne,
-  ManyTwo
+  Product
 } from "@prisma/client";

@@ -111,34 +111,4 @@ model Product {
   price      Int
   name       String
   position   Int
-
-  productChild     ProductChild[]
-}
-
-model ProductChild {
-  id         Int      @id @default(autoincrement())
-  name        String
-
-  productId  Int
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-}
-
-
-model TestTable {
-  id         Int            @id @default(autoincrement())
-  name       String
-  address    String
-  position   Int
-}
-
-model ManyOne {
-  id     Int     @id @default(autoincrement())
-  name   String
-  ManyTwos  ManyTwo[]
-}
-
-model ManyTwo {
-  id     Int     @id @default(autoincrement())
-  title  String
-  ManyOnes  ManyOne[]
 }

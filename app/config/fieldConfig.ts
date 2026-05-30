@@ -10,26 +10,6 @@ const fieldConfig: Record<string, Record<string, Record<string, any>>> = {
       label: "Price (€)",
       min: 0,
     },
-    productChild: {
-      label: "Child Product",
-      relationType: "child",
-    },
-  },
-  manyOne: {
-    name: {
-      label: "Name",
-    },
-    ManyTwos: {
-      relationType: "manyToMany",
-    },
-  },
-  manyTwo: {
-    tiele: {
-      label: "Title",
-    },
-    ManyOnes: {
-      relationType: "manyToMany",
-    },
   },
   user: {
     accounts: {
@@ -46,7 +26,6 @@ const fieldConfig: Record<string, Record<string, Record<string, any>>> = {
 
 export const tableConfig: Record<string, { ignoredFields?: string[] }> = {
   product: {},
-  productChild: {},
 };
 
 export default fieldConfig;
