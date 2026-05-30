@@ -30,7 +30,6 @@
 // =============================================================================
 
 import { useState } from "react";
-import type { Product } from "@/framework/types";
 import { useTable } from "@/framework/utils/useTable";
 import { useAbsoluteModal } from "@/framework/ui/context/AppContext";
 import { useAlert } from "@/framework/ui/useAlert";
@@ -39,13 +38,41 @@ import GridLayout from "@/framework/data/GridLayout";
 import ImageUpload from "@/framework/data/image/ImageUpload";
 import ImageGallery from "@/framework/data/image/ImageGallery";
 import RichTextEditor from "@/framework/ui/RichTextEditor";
-import ProductCard from "@/components/ProductCard";
+import EditInput from "@/framework/data/EditInput";
+import CrudButton from "@/framework/data/buttons/CrudButton";
 import RelationRow from "@/framework/data/RelationRow";
 
-// Local stand-in types. In a real project, after adding ManyOne / ManyTwo to
-// prisma/schema.prisma, export them from @/framework/types and import instead.
+// -----------------------------------------------------------------------------
+// All Prisma models below (Product / ManyOne / ManyTwo) are LOCAL STAND-INS for
+// illustration only. They do NOT need to exist in prisma/schema.prisma for this
+// file to compile. In a real project you would:
+//   1. Add the model to prisma/schema.prisma
+//   2. Re-export it from @/framework/types
+//   3. Replace the local type below with `import type { Product } from "@/framework/types"`
+// Until then, useTable("product") just returns an empty list at runtime and
+// nothing renders — no errors, no crashes.
+// -----------------------------------------------------------------------------
+type Product = { id: number; name: string; price: number; position?: number };
 type ManyOne = { id: number; name: string; ManyTwos?: ManyTwo[] };
 type ManyTwo = { id: number; title: string; ManyOnes?: ManyOne[] };
+
+// Inline product card kept inside the example so this file is self-contained
+// (which is itself a deletable demo).
+function ExampleProductCard({ product }: { product: Product }) {
+  const { remove, isDeletingId, update } = useTable<Product>("product");
+  return (
+    <div className="bg-white border border-gray-200 rounded-xl shadow-sm px-5 py-3 flex items-center gap-6">
+      <EditInput value={product.name ?? ""} table="product" field="name" id={product.id} update={(data) => update(product.id, data)} />
+      <EditInput value={product.price} table="product" field="price" id={product.id} update={(data) => update(product.id, data)} />
+      <CrudButton
+        type="delete"
+        table="product"
+        loading={isDeletingId(product.id)}
+        onClick={() => remove(product.id)}
+      />
+    </div>
+  );
+}
 
 // -----------------------------------------------------------------------------
 // AbsoluteModalExamples
@@ -156,7 +183,7 @@ export default function HomePageExample() {
             drag-and-drop order via the model's `position` field. */}
         <GridLayout title="Products" layout="one-column" table="product" onReorder={productData.reorder}>
           {productData.records.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ExampleProductCard key={product.id} product={product} />
           ))}
         </GridLayout>
 

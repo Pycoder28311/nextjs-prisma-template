@@ -20,7 +20,7 @@ If the MCP server is not available (e.g. fresh clone on a machine without Obsidi
 
 ## STOP — Protected paths (DO NOT EDIT unless the user explicitly asks)
 
-The paths below are the **reusable framework, shared auth, and generic API infrastructure**. They are imported across every project that pulls this repo. A silent change here breaks every other consumer and erases the whole point of the scaffold.
+The paths below are the **reusable framework subfolders, shared auth, and generic API infrastructure**. They are imported across every project that pulls this repo. A silent change here breaks every other consumer and erases the whole point of the scaffold.
 
 **The rule is absolute:** treat these paths as read-only vendor code.
 
@@ -32,7 +32,11 @@ The paths below are the **reusable framework, shared auth, and generic API infra
 
 ### Protected paths
 
-- `app/framework/**` — the entire reusable library
+- `app/framework/data/**` — the entire reusable data library
+- `app/framework/example/**` — the entire reusable example helper
+- `app/framework/lib/**` — the entire reusable lib
+- `app/framework/types/**` — the entire types index
+- `app/framework/utils/**` — the entire utils folder
 - `app/auth/**` — auth UI screens (sign-in, sign-up, password reset)
 - `app/api/[model]/**` — generic CRUD endpoints driven by `resolveModel()`
 - `app/api/auth/**` — NextAuth route handlers

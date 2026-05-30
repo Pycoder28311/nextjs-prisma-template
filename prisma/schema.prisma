@@ -105,10 +105,3 @@ model Image {
   parentId   Int?
   parent     String?
 }
-
-model Product {
-  id         Int            @id @default(autoincrement())
-  price      Int
-  name       String
-  position   Int
-}

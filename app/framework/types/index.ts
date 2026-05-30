@@ -5,6 +5,5 @@ export type {
   PasswordReset,
   Email,
   User,
-  Image,
-  Product
+  Image
 } from "@prisma/client";
