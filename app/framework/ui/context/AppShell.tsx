@@ -9,7 +9,6 @@ const SHELL_HIDDEN_PATHS = [
   "/login",
   "/register",
   "/auth",
-  "/about",
 ];
 
 function isShellHidden(pathname: string) {

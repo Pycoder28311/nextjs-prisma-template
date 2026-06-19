@@ -11,6 +11,7 @@ import HamburgerButton from "@/framework/ui/navigation/helper/HamburgerButton";
 import RightSidebar from "@/framework/ui/navigation/helper/RightSidebar";
 import UserMenu from "@/framework/ui/navigation/helper/UserMenu";
 import UserSidebar from "@/framework/ui/navigation/helper/UserSidebar";
+import Button from "@/framework/ui/buttons/Button";
 import { useTheme } from "next-themes";
 import { useAbsoluteModal } from "@/framework/ui/context/AppContext";
 
@@ -81,11 +82,13 @@ export default function Navbar() {
             {/* Desktop nav */}
             <div className="hidden md:flex items-center gap-6 h-full">
               {navLinks.map((link) => (
-                <button
+                <Button
                   {...hoverModal.triggerProps}
-                  className="h-full"
                   key={link.href}
-                  onMouseEnter={() => hoverModal.open({
+                  styleType="nav"
+                  href={link.href}
+                  className="flex items-center gap-1 h-full"
+                  onHover={() => hoverModal.open({
                     side: "bottom",
                     align: "center",
                     offset: 0,
@@ -93,23 +96,18 @@ export default function Navbar() {
                     component: link.megaMenu,
                   })}
                 >
-                  <Link
-                    href={link.href}
-                    className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 transition-colors h-full"
-                  >
-                    {link.label}
-                    {link.megaMenu && (
-                      <svg
-                        className={`w-3.5 h-3.5 text-gray-400 transition-transform ${activeMenu === link.label ? "rotate-180" : ""}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    )}
-                  </Link>
-                </button>
+                  {link.label}
+                  {link.megaMenu && (
+                    <svg
+                      className={`w-3.5 h-3.5 text-gray-400 transition-transform ${activeMenu === link.label ? "rotate-180" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  )}
+                </Button>
               ))}
             </div>
 
@@ -187,14 +185,15 @@ export default function Navbar() {
               <NavSearch placeholder="Search..." className="w-full" />
             </div>
             {navLinks.map((link) => (
-              <Link
+              <Button
                 key={link.href}
+                styleType="nav"
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
-                className="text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors"
+                className="w-full justify-start"
               >
                 {link.label}
-              </Link>
+              </Button>
             ))}
             {mounted && (
               <div className="pt-3 mt-2 border-t border-gray-100">

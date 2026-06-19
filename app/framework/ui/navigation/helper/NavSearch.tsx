@@ -2,7 +2,7 @@
 
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useApp } from "@/framework/ui/context/AppContext";
+import { useApp, useAbsoluteModal } from "@/framework/ui/context/AppContext";
 
 export type SearchResult = {
   id: string | number;
@@ -59,22 +59,30 @@ function ResultItem({ item, onClose }: { item: SearchResult; onClose: () => void
 
 export default function NavSearch({ placeholder = "Search...", results: externalResults, onSearch, className, iconMode = false }: Props) {
   const { tableRecords, prismaFields } = useApp();
+  const modal = useAbsoluteModal<HTMLDivElement>();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState(!iconMode);
-  const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const close = () => { setOpen(false); setQuery(""); if (iconMode) setExpanded(false); modal.close(); };
+  const clear = () => { setQuery(""); onSearch?.(""); inputRef.current?.focus(); };
+  const openExpanded = () => { setExpanded(true); setTimeout(() => inputRef.current?.focus(), 50); };
+
+  // Collapse the field on outside click. The dropdown lives in the AbsoluteModal
+  // (which closes itself), so we ignore clicks inside it or on the trigger.
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-        if (iconMode) { setExpanded(false); setQuery(""); }
-      }
+      const t = e.target as HTMLElement | null;
+      if (!t) return;
+      if (modal.triggerRef.current?.contains(t)) return;
+      if (t.closest("[data-absolute-modal]")) return;
+      setOpen(false);
+      if (iconMode) { setExpanded(false); setQuery(""); }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [iconMode]);
+  }, [iconMode, modal.triggerRef]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -112,16 +120,8 @@ export default function NavSearch({ placeholder = "Search...", results: external
     return acc;
   }, {});
 
-  const close = () => { setOpen(false); setQuery(""); if (iconMode) setExpanded(false); };
-  const clear = () => { setQuery(""); onSearch?.(""); inputRef.current?.focus(); };
-
-  const openExpanded = () => {
-    setExpanded(true);
-    setTimeout(() => inputRef.current?.focus(), 50);
-  };
-
-  const dropdown = showDropdown && (
-    <div className="absolute top-full mt-2 left-0 w-full bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden">
+  const dropdown = (
+    <div className="bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
       {results.length === 0 ? (
         <div className="flex flex-col items-center gap-2 px-4 py-6 text-center">
           <SearchIcon className="w-8 h-8 text-gray-300" />
@@ -144,9 +144,19 @@ export default function NavSearch({ placeholder = "Search...", results: external
     </div>
   );
 
+  // Keep the dropdown content live as the query/results change while open.
+  useEffect(() => {
+    if (showDropdown) {
+      modal.open({ component: dropdown, side: "bottom", align: "start", offset: 8, matchAnchorWidth: true });
+    } else {
+      modal.close();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showDropdown, query, results.length, externalResults]);
+
   if (iconMode) {
     return (
-      <div ref={containerRef} className={`relative w-9 h-9 ${className ?? ""}`}>
+      <div className={`relative w-9 h-9 ${className ?? ""}`}>
         <button
           type="button"
           onClick={openExpanded}
@@ -158,7 +168,10 @@ export default function NavSearch({ placeholder = "Search...", results: external
 
         {expanded && (
           <div className="absolute right-0 top-1/2 -translate-y-1/2 z-50">
-            <div className="relative flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-1.5 bg-white ring-2 ring-blue-400 shadow-sm">
+            <div
+              {...modal.triggerProps}
+              className="relative flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-1.5 bg-white ring-2 ring-blue-400 shadow-sm"
+            >
               <SearchIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
               <input
                 ref={inputRef}
@@ -176,7 +189,6 @@ export default function NavSearch({ placeholder = "Search...", results: external
                   </svg>
                 </button>
               )}
-              {dropdown}
             </div>
           </div>
         )}
@@ -185,8 +197,11 @@ export default function NavSearch({ placeholder = "Search...", results: external
   }
 
   return (
-    <div ref={containerRef} className={`relative w-56 ${className ?? ""}`}>
-      <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus-within:ring-2 focus-within:ring-blue-400 focus-within:border-transparent transition-all">
+    <div className={`relative w-56 ${className ?? ""}`}>
+      <div
+        {...modal.triggerProps}
+        className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus-within:ring-2 focus-within:ring-blue-400 focus-within:border-transparent transition-all"
+      >
         <SearchIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
         <input
           ref={inputRef}
@@ -205,7 +220,6 @@ export default function NavSearch({ placeholder = "Search...", results: external
           </button>
         )}
       </div>
-      {dropdown}
     </div>
   );
 }

@@ -1,6 +1,9 @@
 "use client";
 
-export type CrudButtonType = "create" | "edit" | "save" | "delete";
+import Button from "@/framework/ui/buttons/Button";
+import { crudButtonVariant, type CrudButtonType } from "@/config/crudButtonConfig";
+
+export type { CrudButtonType };
 
 type Props = {
   type: CrudButtonType;
@@ -8,13 +11,6 @@ type Props = {
   onClick: () => void;
   disabled?: boolean;
   loading?: boolean;
-};
-
-const styles: Record<CrudButtonType, string> = {
-  create: "bg-green-600 text-white hover:bg-green-700",
-  edit:   "text-blue-600 hover:text-blue-800 hover:underline",
-  save:   "bg-blue-600 text-white hover:bg-blue-700",
-  delete: "text-red-500 hover:text-red-700 hover:underline",
 };
 
 const labels: Record<CrudButtonType, string> = {
@@ -33,12 +29,12 @@ const loadingLabels: Record<CrudButtonType, string> = {
 
 export default function CrudButton({ type, onClick, disabled, loading }: Props) {
   return (
-    <button
+    <Button
+      styleType={crudButtonVariant[type]}
       onClick={onClick}
       disabled={disabled || loading}
-      className={`text-xs px-2 py-1 rounded disabled:opacity-50 disabled:cursor-not-allowed ${styles[type]}`}
     >
       {loading ? loadingLabels[type] : labels[type]}
-    </button>
+    </Button>
   );
 }

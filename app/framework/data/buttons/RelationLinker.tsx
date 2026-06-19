@@ -2,6 +2,8 @@
 
 import React from "react";
 import { useTable } from "@/framework/utils/useTable";
+import Button from "@/framework/ui/buttons/Button";
+import { relationLinkerVariant } from "@/config/crudButtonConfig";
 
 type Props = {
   table: string;
@@ -39,17 +41,17 @@ export default function RelationLinker({
           return (
             <li key={item.id} className="flex items-center justify-between gap-3 px-3 py-1.5">
               <span className="truncate">{renderLabel(item)}</span>
-              <button
-                type="button"
+              <Button
+                styleType={relationLinkerVariant[linked ? "unlink" : "link"]}
                 onClick={() =>
                   linked
                     ? sourceData.disconnect(relationField, id, item.id)
                     : sourceData.connect(relationField, id, item.id)
                 }
-                className={`text-xs px-2 py-1 rounded ${linked ? "bg-rose-100 text-rose-700 hover:bg-rose-200" : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"}`}
+                className="text-xs! px-2.5! py-1!"
               >
                 {linked ? "Unlink" : "Link"}
-              </button>
+              </Button>
             </li>
           );
         })}
