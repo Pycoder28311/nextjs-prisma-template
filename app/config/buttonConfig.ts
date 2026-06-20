@@ -69,10 +69,10 @@ export const variantStyles: Record<ButtonVariant, VariantStyle> = {
     disabled: "disabled:opacity-50 disabled:cursor-not-allowed",
   },
   // Navbar link style: transparent, gray text that darkens on hover.
-  nav: {
-    base: "bg-transparent text-gray-600 focus-visible:ring-gray-400",
-    hover: "hover:text-gray-900 hover:bg-gray-50",
-    active: "",
-    disabled: "disabled:opacity-50 disabled:cursor-not-allowed",
-  },
+ nav: {
+  base: "relative bg-transparent text-gray-600 py-2 transition-all duration-200 focus-visible:ring-gray-400",
+  hover: "hover:text-gray-900 hover:bg-gray-50 after:absolute after:left-3 after:right-3 after:bottom-0 after:h-0.5 after:bg-green-500 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-200",
+  active: "text-gray-900 bg-gray-50 after:absolute after:left-3 after:right-3 after:bottom-0 after:h-0.5 after:bg-green-500",
+  disabled: "disabled:opacity-50 disabled:cursor-not-allowed",
+},
 };

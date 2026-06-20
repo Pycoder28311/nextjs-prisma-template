@@ -4,6 +4,7 @@ import { useState } from "react";
 import Button from "@/framework/ui/buttons/Button";
 import SearchInput from "@/framework/ui/searchInput/SearchInput";
 import Input from "@/framework/ui/input/Input";
+import Text from "@/framework/ui/text/Text";
 import { BUTTON_VARIANTS } from "@/config/buttonConfig";
 import { INPUT_STYLE_TYPES } from "@/config/inputConfig";
 
@@ -193,6 +194,39 @@ export default function AboutPage() {
             <span className="text-sm text-gray-600">File</span>
             <Input type="file" />
           </label>
+        </div>
+      </section>
+
+      {/* Text component */}
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold text-gray-800">Text</h2>
+
+        {/* Standalone (not inside buttons) */}
+        <div className="flex flex-col items-start gap-2">
+          <Text value="Very small with info" size="very small" icon="info" />
+          <Text value="Small with star" size="small" icon="star" />
+          <Text value="Medium, icon on right" size="medium" icon="arrow-right" iconPosition="right" />
+          <Text value="Big home heading" size="big" icon="home" />
+          <Text icon="search" size="large" /> {/* icon only, centered */}
+        </div>
+
+        {/* Inside buttons */}
+        <div className="flex flex-wrap items-center gap-3">
+          <Button styleType="primary">
+            <Text value="Save" icon="check" />
+          </Button>
+          <Button styleType="secondary">
+            <Text value="Settings" icon="settings" />
+          </Button>
+          <Button styleType="delete">
+            <Text value="Delete" icon="trash" />
+          </Button>
+          <Button styleType="tertiary">
+            <Text value="Next" icon="arrow-right" iconPosition="right" />
+          </Button>
+          <Button styleType="primary" className="w-10 h-10 p-0!">
+            <Text icon="heart" /> {/* icon-only button */}
+          </Button>
         </div>
       </section>
     </main>

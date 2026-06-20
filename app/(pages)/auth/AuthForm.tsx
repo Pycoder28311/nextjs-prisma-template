@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/authOptions"; 
+import { authOptions } from "../../api/auth/authOptions";
 import Link from "next/link";
 
 export default async function HomePage() {
