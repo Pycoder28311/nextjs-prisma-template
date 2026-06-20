@@ -8,6 +8,8 @@
     "build": "prisma generate && next build",
     "git-push": "git add . && git commit -m \"auto commit\" && git push origin main",
     "git": "next build && npm run git-push",
+    "pull": "git pull origin main",
+    "git-all": "powershell -Command \"$confirm = Read-Host 'Are you sure to push to all branches? (y/n)'; if ($confirm -eq 'y') { next build; git add .; git commit -m 'auto commit'; git push origin main; git push origin HEAD:claude/repo-capabilities-access-wkpcqz }\"",
     "prisma-migrate": "npx prisma migrate dev --name auto",
     "prisma-generate": "npx prisma generate",
     "prisma-sync": "npx tsx app/framework/lib/scripts/generateTypes.ts",
