@@ -36,6 +36,7 @@ const navLinks: NavLink[] = [
   { href: "/products", label: "Products", megaMenu: <ProductsMegaMenu /> },
   { href: "/pricing", label: "Pricing" },
   { href: "/blog", label: "Blog" },
+  { href: "/docs", label: "Docs" },
   { href: "/contact", label: "Contact" },
 ];
 
