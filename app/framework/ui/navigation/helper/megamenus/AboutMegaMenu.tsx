@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Text from "@/framework/ui/iconText/Text";
 
 const sections = [
   { label: "Our Story", description: "How we started and where we're going", href: "/about/story" },
@@ -21,16 +22,16 @@ export default function AboutMegaMenu() {
                 href={item.href}
                 className="flex flex-col gap-1 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
               >
-                <p className="text-sm font-medium text-gray-800 group-hover:text-gray-900">{item.label}</p>
-                <p className="text-xs text-gray-500">{item.description}</p>
+                <Text value={item.label} size="small" className="font-medium text-gray-800 group-hover:text-gray-900" />
+                <Text value={item.description} size="very small" className="text-gray-500" />
               </Link>
             ))}
           </div>
           <div className="w-56 bg-gray-50 rounded-xl p-5 flex flex-col gap-2">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Get in touch</p>
-            <p className="text-sm text-gray-600">Questions? We&apos;d love to hear from you.</p>
-            <Link href="/contact" className="mt-2 text-sm text-center bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
-              Contact us
+            <Text value="Get in touch" size="very small" className="font-semibold text-gray-400 uppercase tracking-wider" />
+            <Text value="Questions? We'd love to hear from you." size="small" className="text-gray-600" />
+            <Link href="/contact" className="mt-2 text-center bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+              <Text value="Contact us" size="small" />
             </Link>
           </div>
         </div>

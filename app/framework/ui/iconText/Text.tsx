@@ -26,7 +26,7 @@ export default function Text({
 
   return (
     <span
-      className={`inline-flex items-center justify-center gap-1.5 ${font} ${className}`}
+      className={`inline-flex items-center gap-1.5 ${font} ${className}`}
     >
       {Icon && iconPosition === "left" && <Icon className={iconSize} aria-hidden />}
       {hasText && value}

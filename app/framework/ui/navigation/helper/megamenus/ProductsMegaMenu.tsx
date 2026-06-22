@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Text from "@/framework/ui/iconText/Text";
 
 const categories = [
   { label: "Electronics", description: "Phones, laptops, accessories", href: "/products/electronics", icon: "⚡" },
