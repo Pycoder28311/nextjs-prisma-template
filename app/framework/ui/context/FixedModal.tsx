@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import Text from "@/framework/ui/iconText/Text";
 
 export function useFixedModalState() {
   const [modalContent, setModalContent] = useState<ReactNode>(null);
@@ -26,12 +27,14 @@ export function useFixedModalState() {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h2 className="text-base font-semibold text-gray-800">{modalTitle ?? ""}</h2>
+          <h2 className="font-semibold text-gray-800">
+            <Text value={modalTitle ?? ""} size="medium" />
+          </h2>
           <button
             onClick={closeModal}
-            className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+            className="text-gray-400 hover:text-gray-600 leading-none"
           >
-            ×
+            <Text icon="close" size="small" />
           </button>
         </div>
         <div className="px-6 py-5">{modalContent}</div>

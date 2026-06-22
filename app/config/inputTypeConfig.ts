@@ -1,3 +1,5 @@
+import { border, colorMain, grayMid } from "./theme";
+
 export const INPUT_TYPES = [
   "text",
   "number",
@@ -34,11 +36,11 @@ export function isControlType(type: string | undefined): type is ControlInputTyp
 
 export const controlInputStyles: Record<ControlInputType, string> = {
   checkbox:
-    "h-4 w-4 rounded border-gray-300 accent-blue-600 focus:ring-2 focus:ring-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed",
+    `h-4 w-4 rounded ${grayMid.border} accent-blue-600 ${colorMain.focusRing} disabled:opacity-50 disabled:cursor-not-allowed`,
   radio:
-    "h-4 w-4 border-gray-300 accent-blue-600 focus:ring-2 focus:ring-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed",
+    `h-4 w-4 ${grayMid.border} accent-blue-600 ${colorMain.focusRing} disabled:opacity-50 disabled:cursor-not-allowed`,
   color:
-    "h-10 w-14 cursor-pointer rounded-md border border-gray-300 bg-white p-1 disabled:opacity-50 disabled:cursor-not-allowed",
+    `h-10 w-14 cursor-pointer rounded-md ${border} bg-white p-1 disabled:opacity-50 disabled:cursor-not-allowed`,
   range:
     "w-full accent-blue-600 disabled:opacity-50 disabled:cursor-not-allowed",
   file:

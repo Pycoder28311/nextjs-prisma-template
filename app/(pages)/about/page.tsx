@@ -4,7 +4,7 @@ import { useState } from "react";
 import Button from "@/framework/ui/buttons/Button";
 import SearchInput from "@/framework/ui/searchInput/SearchInput";
 import Input from "@/framework/ui/input/Input";
-import Text from "@/framework/ui/text/Text";
+import Text from "@/framework/ui/iconText/Text";
 import { BUTTON_VARIANTS } from "@/config/buttonConfig";
 import { INPUT_STYLE_TYPES } from "@/config/inputConfig";
 

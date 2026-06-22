@@ -3,6 +3,7 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useApp, useAbsoluteModal } from "@/framework/ui/context/AppContext";
+import Text from "@/framework/ui/iconText/Text";
 
 export type SearchResult = {
   id: string | number;
@@ -23,14 +24,6 @@ type Props = {
   iconMode?: boolean;
 };
 
-function SearchIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-    </svg>
-  );
-}
-
 function ResultItem({ item, onClose }: { item: SearchResult; onClose: () => void }) {
   const inner = (
     <div className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors cursor-pointer">
@@ -46,9 +39,11 @@ function ResultItem({ item, onClose }: { item: SearchResult; onClose: () => void
         )}
       </div>
       {item.badge && (
-        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full flex-shrink-0">
-          {item.badge}
-        </span>
+        <Text
+          value={item.badge}
+          size="very small"
+          className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full flex-shrink-0"
+        />
       )}
     </div>
   );
@@ -124,8 +119,12 @@ export default function NavSearch({ placeholder = "Search...", results: external
     <div className="bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
       {results.length === 0 ? (
         <div className="flex flex-col items-center gap-2 px-4 py-6 text-center">
-          <SearchIcon className="w-8 h-8 text-gray-300" />
-          <p className="text-sm text-gray-400">No results for <span className="font-medium text-gray-600">&ldquo;{query}&rdquo;</span></p>
+          <Text icon="search" size="big" className="text-gray-300" />
+          <Text
+            size="small"
+            className="text-gray-400"
+            value={<>No results for <span className="font-medium text-gray-600">&ldquo;{query}&rdquo;</span></>}
+          />
         </div>
       ) : (
         <div className="py-2">

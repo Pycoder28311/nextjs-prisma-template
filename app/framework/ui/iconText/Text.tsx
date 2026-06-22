@@ -1,5 +1,4 @@
-import { textSizeStyles, type TextSize } from "@/config/textConfig";
-import { ICONS, type IconName } from "@/config/iconConfig";
+import { ICONS, iconSizeStyles, type IconName, type TextSize } from "@/config/iconConfig";
 
 type Props = {
   value?: React.ReactNode;
@@ -21,14 +20,17 @@ export default function Text({
   const Icon = icon ? ICONS[icon] : null;
   const hasText = value !== undefined && value !== null && value !== "";
 
-  // react-icons render at 1em, so the icon scales with the text size class.
+  // Sizes come from the icon config: the font scales with the text size class,
+  // and the icon gets an explicit responsive w/h relative to the mobile size.
+  const { icon: iconSize, font } = iconSizeStyles[size];
+
   return (
     <span
-      className={`inline-flex items-center justify-center gap-1.5 ${textSizeStyles[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 ${font} ${className}`}
     >
-      {Icon && iconPosition === "left" && <Icon aria-hidden />}
+      {Icon && iconPosition === "left" && <Icon className={iconSize} aria-hidden />}
       {hasText && value}
-      {Icon && iconPosition === "right" && <Icon aria-hidden />}
+      {Icon && iconPosition === "right" && <Icon className={iconSize} aria-hidden />}
     </span>
   );
 }

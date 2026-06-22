@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, type ReactNode } from "react";
+import Text from "@/framework/ui/iconText/Text";
 
 type Props = {
   open: boolean;
@@ -31,16 +32,16 @@ export default function RightSidebar({ open, onClose, title = "Menu", children, 
         }`}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-base font-semibold text-gray-800">{title}</h2>
+          <h2 className="font-semibold text-gray-800">
+            <Text value={title} size="medium" />
+          </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close sidebar"
             className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <Text icon="close" size="small" />
           </button>
         </div>
 

@@ -1,3 +1,5 @@
+import { border, colorMain, colorRed, grayLight, grayMid } from "./theme";
+
 export const INPUT_STYLE_TYPES = [
   "outlined",
   "filled",
@@ -16,20 +18,20 @@ export const inputBase =
 export const inputStyles: Record<InputStyleType, string> = {
   // Bordered box with a focus ring.
   outlined:
-    "rounded-md border border-gray-300 bg-white hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30",
+    `rounded-md ${border} bg-white ${grayMid.borderHover} ${colorMain.focusBorder} ${colorMain.focusRing}`,
   // Gray fill that turns white on focus.
   filled:
-    "rounded-md border border-transparent bg-gray-100 hover:bg-gray-200 focus:bg-white focus:border-blue-500",
+    `rounded-md border border-transparent ${grayLight.bg} ${grayLight.bgHover} focus:bg-white ${colorMain.focusBorder}`,
   // Bottom border only.
   underline:
-    "rounded-none border-0 border-b-2 border-gray-300 bg-transparent px-0 hover:border-gray-400 focus:border-blue-500",
+    `rounded-none border-0 border-b-2 ${grayMid.border} bg-transparent px-0 ${grayMid.borderHover} ${colorMain.focusBorder}`,
   // No border/background until focus.
   ghost:
-    "rounded-md border border-transparent bg-transparent hover:bg-gray-100 focus:bg-white focus:border-blue-500",
+    `rounded-md border border-transparent bg-transparent hover:bg-gray-100 focus:bg-white ${colorMain.focusBorder}`,
   // Fully rounded outlined.
   pill:
-    "rounded-full border border-gray-300 bg-white px-4 hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30",
+    `rounded-full ${border} bg-white px-4 ${grayMid.borderHover} ${colorMain.focusBorder} ${colorMain.focusRing}`,
   // Red/danger state.
   error:
-    "rounded-md border border-red-400 bg-white text-red-700 placeholder:text-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-500/30",
+    `rounded-md border ${colorRed.border} bg-white text-red-700 placeholder:text-red-300 ${colorRed.focusBorder} ${colorRed.focusRing}`,
 };

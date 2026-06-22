@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Text from "@/framework/ui/iconText/Text";
+import type { IconName } from "@/config/iconConfig";
 
 export type AlertType = "Success" | "Error" | "Warning";
 
@@ -11,21 +13,21 @@ type Props = {
   onClose?: () => void;
 };
 
-const styles: Record<AlertType, { container: string; bar: string; icon: string }> = {
+const styles: Record<AlertType, { container: string; bar: string; icon: IconName }> = {
   Success: {
     container: "bg-green-50 border-green-300 text-green-800",
     bar: "bg-green-500",
-    icon: "✓",
+    icon: "check",
   },
   Error: {
     container: "bg-red-50 border-red-300 text-red-800",
     bar: "bg-red-500",
-    icon: "✕",
+    icon: "close",
   },
   Warning: {
     container: "bg-yellow-50 border-yellow-300 text-yellow-800",
     bar: "bg-yellow-500",
-    icon: "⚠",
+    icon: "alert",
   },
 };
 
@@ -62,15 +64,15 @@ export default function Alert({ type, message, durationMs = 3000, onClose }: Pro
     <div
       className={`pointer-events-auto relative overflow-hidden flex items-start gap-3 pl-8 pr-3 py-4 sm:pl-7 sm:pr-3 sm:py-3 rounded-lg border shadow-md w-full sm:w-auto sm:min-w-[280px] sm:max-w-md transition-transform duration-300 ease-out ${s.container} ${offscreen ? "translate-x-[120%]" : "translate-x-0"}`}
     >
-      <span className="font-bold text-lg sm:text-base leading-5">{s.icon}</span>
+      <Text icon={s.icon} size="medium" className="shrink-0 leading-5" />
       <p className="flex-1 text-base sm:text-sm leading-6 sm:leading-5">{message}</p>
       <button
         type="button"
         onClick={() => setLeaving(true)}
-        className="text-current opacity-50 hover:opacity-100 text-3xl sm:text-2xl leading-none flex items-center justify-center w-8 h-8 sm:w-7 sm:h-7 -mt-1 shrink-0"
+        className="text-current opacity-50 hover:opacity-100 leading-none flex items-center justify-center w-8 h-8 sm:w-7 sm:h-7 -mt-1 shrink-0"
         aria-label="Close"
       >
-        ×
+        <Text icon="close" size="medium" />
       </button>
 
       <div className="absolute left-0 top-0 bottom-0 w-1.5 sm:w-1 bg-black/10">
