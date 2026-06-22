@@ -12,6 +12,7 @@ import RightSidebar from "@/framework/ui/navigation/helper/RightSidebar";
 import UserMenu from "@/framework/ui/navigation/helper/UserMenu";
 import UserSidebar from "@/framework/ui/navigation/helper/UserSidebar";
 import Button from "@/framework/ui/buttons/Button";
+import Text from "@/framework/ui/iconText/Text";
 import { useTheme } from "next-themes";
 import { useAbsoluteModal } from "@/framework/ui/context/AppContext";
 
@@ -72,8 +73,8 @@ export default function Navbar() {
 
             <div className="flex items-center gap-2">
               <HamburgerButton open={sidebarOpen} onClick={() => setSidebarOpen((v) => !v)} className="hidden md:flex" />
-              <Link href="/" className="font-bold text-lg text-gray-900 tracking-tight">
-                MyApp
+              <Link href="/" className="font-bold text-gray-900 tracking-tight">
+                <Text value="MyApp" size="medium" />
               </Link>
             </div>
 
@@ -94,16 +95,13 @@ export default function Navbar() {
                     component: link.megaMenu,
                   })}
                 >
-                  {link.label}
+                  <Text value={link.label} size="small" />
                   {link.megaMenu && (
-                    <svg
-                      className={`w-3.5 h-3.5 text-gray-400 transition-transform ${activeMenu === link.label ? "rotate-180" : ""}`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
+                    <Text
+                      icon="chevron-down"
+                      size="very small"
+                      className={`text-gray-400 transition-transform ${activeMenu === link.label ? "rotate-180" : ""}`}
+                    />
                   )}
                 </Button>
               ))}
@@ -122,9 +120,7 @@ export default function Navbar() {
                     className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
                     aria-label="Change theme"
                   >
-                    <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-                    </svg>
+                    <Text icon="palette" size="small" className="text-gray-600" />
                   </button>
                   {themeDropdownOpen && (
                     <div className="absolute right-0 top-full mt-2 w-40 bg-white border border-gray-200 rounded-xl shadow-lg py-1 z-50">
@@ -133,17 +129,15 @@ export default function Navbar() {
                           key={t.value}
                           type="button"
                           onClick={() => { setTheme(t.value); setThemeDropdownOpen(false); }}
-                          className={`flex items-center gap-2.5 w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${theme === t.value ? "font-medium text-gray-900" : "text-gray-600"}`}
+                          className={`flex items-center gap-2.5 w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors ${theme === t.value ? "font-medium text-gray-900" : "text-gray-600"}`}
                         >
                           <span
                             className="w-4 h-4 rounded-full border border-gray-300 flex-shrink-0"
                             style={{ backgroundColor: t.color }}
                           />
-                          {t.label}
+                          <Text value={t.label} size="small" />
                           {theme === t.value && (
-                            <svg className="w-3.5 h-3.5 ml-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                            </svg>
+                            <Text icon="check" size="very small" className="ml-auto text-gray-400" />
                           )}
                         </button>
                       ))}
@@ -166,9 +160,7 @@ export default function Navbar() {
                 {user?.image ? (
                   <img src={user.image} alt={user.name ?? "User"} className="w-7 h-7 rounded-full object-cover" />
                 ) : (
-                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
+                  <Text icon="user" size="medium" className="text-gray-600" />
                 )}
               </button>
               <HamburgerButton open={menuOpen} onClick={() => setMenuOpen((v) => !v)} />
@@ -190,12 +182,12 @@ export default function Navbar() {
                 onClick={() => setMenuOpen(false)}
                 className="w-full justify-start"
               >
-                {link.label}
+                <Text value={link.label} size="small" />
               </Button>
             ))}
             {mounted && (
               <div className="pt-3 mt-2 border-t border-gray-100">
-                <p className="text-xs text-gray-400 px-3 mb-2">Theme</p>
+                <Text value="Theme" size="very small" className="text-gray-400 px-3 mb-2" />
                 <div className="flex gap-2 px-3">
                   {THEMES.map((t) => (
                     <button
@@ -212,14 +204,14 @@ export default function Navbar() {
             )}
             <div className="pt-3 mt-2 border-t border-gray-100">
               {user ? (
-                <span className="text-sm font-medium text-gray-700 px-3">{user.name ?? user.email}</span>
+                <Text value={user.name ?? user.email} size="small" className="font-medium text-gray-700 px-3" />
               ) : (
                 <Link
                   href="/login"
                   onClick={() => setMenuOpen(false)}
-                  className="block text-sm text-center bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                  className="block text-center bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
                 >
-                  Sign in
+                  <Text value="Sign in" size="small" />
                 </Link>
               )}
             </div>
@@ -229,51 +221,36 @@ export default function Navbar() {
 
       <RightSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} title="Sidebar" side="left">
         <nav className="flex flex-col gap-1">
-          <Link href="/" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-            Dashboard
+          <Link href="/" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+            <Text icon="dashboard" size="small" className="text-gray-400" />
+            <Text value="Dashboard" size="small" />
           </Link>
-          <Link href="/projects" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-            </svg>
-            Projects
+          <Link href="/projects" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+            <Text icon="folder" size="small" className="text-gray-400" />
+            <Text value="Projects" size="small" />
           </Link>
-          <Link href="/tasks" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-            </svg>
-            Tasks
+          <Link href="/tasks" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+            <Text icon="tasks" size="small" className="text-gray-400" />
+            <Text value="Tasks" size="small" />
           </Link>
-          <Link href="/messages" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-            Messages
+          <Link href="/messages" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+            <Text icon="messages" size="small" className="text-gray-400" />
+            <Text value="Messages" size="small" />
           </Link>
-          <Link href="/analytics" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            Analytics
+          <Link href="/analytics" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+            <Text icon="analytics" size="small" className="text-gray-400" />
+            <Text value="Analytics" size="small" />
           </Link>
 
           <div className="mt-3 pt-3 border-t border-gray-100">
-            <p className="text-xs text-gray-400 px-3 mb-1">Account</p>
-            <Link href="/settings" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              Settings
+            <Text value="Account" size="very small" className="text-gray-400 px-3 mb-1" />
+            <Link href="/settings" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+              <Text icon="settings" size="small" className="text-gray-400" />
+              <Text value="Settings" size="small" />
             </Link>
-            <Link href="/help" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Help & Support
+            <Link href="/help" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+              <Text icon="help" size="small" className="text-gray-400" />
+              <Text value="Help & Support" size="small" />
             </Link>
           </div>
         </nav>
@@ -286,35 +263,28 @@ export default function Navbar() {
               <p className="text-sm font-medium text-gray-800 truncate">{user.name ?? "User"}</p>
               <p className="text-xs text-gray-500 truncate">{user.email}</p>
             </div>
-            <Link href="/profile" onClick={() => setUserSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              Profile
+            <Link href="/profile" onClick={() => setUserSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+              <Text icon="user" size="small" className="text-gray-400" />
+              <Text value="Profile" size="small" />
             </Link>
-            <Link href="/settings" onClick={() => setUserSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              Settings
+            <Link href="/settings" onClick={() => setUserSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+              <Text icon="settings" size="small" className="text-gray-400" />
+              <Text value="Settings" size="small" />
             </Link>
             <div className="mt-3 pt-3 border-t border-gray-100">
-              <Link href="/api/auth/signout" onClick={() => setUserSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-red-600 hover:bg-red-50 transition-colors">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                Sign out
+              <Link href="/api/auth/signout" onClick={() => setUserSidebarOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors">
+                <Text icon="logout" size="small" />
+                <Text value="Sign out" size="small" />
               </Link>
             </div>
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            <Link href="/login" onClick={() => setUserSidebarOpen(false)} className="block text-sm text-center bg-gray-900 text-white px-4 py-2.5 rounded-lg hover:bg-gray-700 transition-colors">
-              Sign in
+            <Link href="/login" onClick={() => setUserSidebarOpen(false)} className="block text-center bg-gray-900 text-white px-4 py-2.5 rounded-lg hover:bg-gray-700 transition-colors">
+              <Text value="Sign in" size="small" />
             </Link>
-            <Link href="/register" onClick={() => setUserSidebarOpen(false)} className="block text-sm text-center border border-gray-200 text-gray-700 px-4 py-2.5 rounded-lg hover:bg-gray-50 transition-colors">
-              Register
+            <Link href="/register" onClick={() => setUserSidebarOpen(false)} className="block text-center border border-gray-200 text-gray-700 px-4 py-2.5 rounded-lg hover:bg-gray-50 transition-colors">
+              <Text value="Register" size="small" />
             </Link>
           </div>
         )

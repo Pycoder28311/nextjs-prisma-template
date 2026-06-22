@@ -28,19 +28,19 @@ export default function ProductsMegaMenu() {
                 href={cat.href}
                 className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
               >
-                <span className="text-2xl leading-none mt-0.5">{cat.icon}</span>
-                <div>
-                  <p className="text-sm font-medium text-gray-800 group-hover:text-gray-900">{cat.label}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{cat.description}</p>
+                <Text value={cat.icon} size="big" className="leading-none mt-0.5" />
+                <div className="flex flex-col">
+                  <Text value={cat.label} size="small" className="font-medium text-gray-800 group-hover:text-gray-900" />
+                  <Text value={cat.description} size="very small" className="text-gray-500 mt-0.5" />
                 </div>
               </Link>
             ))}
           </div>
           <div className="border-l border-gray-100 pl-8 flex flex-col gap-1">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Featured</p>
+            <Text value="Featured" size="very small" className="font-semibold text-gray-400 uppercase tracking-wider mb-2" />
             {featured.map((item) => (
-              <Link key={item.href} href={item.href} className="text-sm text-gray-600 hover:text-gray-900 py-1 transition-colors">
-                {item.label}
+              <Link key={item.href} href={item.href} className="text-gray-600 hover:text-gray-900 py-1 transition-colors">
+                <Text value={item.label} size="small" />
               </Link>
             ))}
           </div>
