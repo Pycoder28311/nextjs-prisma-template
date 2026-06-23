@@ -20,6 +20,7 @@ call them is fine and encouraged. Editing them silently is not.
 | `app/framework/utils/**` | Read-only. Never edit. |
 | `app/framework/ui/**` *(most files)* | Read-only — **except** the two special cases below. |
 | `app/framework/example/**` | **Freely editable.** No restrictions. |
+| `app/api/**` | Read-only. **Ask the user first** before adding or editing anything here, even if a task seems to require it. Name the exact file and change needed and wait for confirmation. |
 
 ### Special cases inside `app/framework/ui/`
 
@@ -189,4 +190,5 @@ that:
 - [ ] Layout is responsive (mobile-first, scales up at breakpoints).
 - [ ] No config file was edited (unless the user explicitly asked).
 - [ ] No protected framework path was edited (unless the user explicitly asked, and for Navbar/Footer, confirmation was obtained first).
+- [ ] Nothing in `app/api/` was added or edited without explicit user confirmation.
 - [ ] New code lives in `app/components/`, a new page route, or `app/framework/example/`.
