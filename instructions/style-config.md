@@ -7,6 +7,40 @@ styles, not invent new ones.
 
 ---
 
+## Protected framework paths — DO NOT EDIT
+
+Treat every path below as read-only vendor code. Reading them to learn how to
+call them is fine and encouraged. Editing them silently is not.
+
+| Path | Rule |
+| --- | --- |
+| `app/framework/data/**` | Read-only. Never edit. |
+| `app/framework/lib/**` | Read-only. Never edit. |
+| `app/framework/types/**` | Read-only. Never edit. |
+| `app/framework/utils/**` | Read-only. Never edit. |
+| `app/framework/ui/**` *(most files)* | Read-only — **except** the two special cases below. |
+| `app/framework/example/**` | **Freely editable.** No restrictions. |
+
+### Special cases inside `app/framework/ui/`
+
+- **Navbar and Footer** (`app/framework/ui/navigation/Navbar.tsx` and
+  `app/framework/ui/navigation/Footer.tsx`): you **may** edit them, but only
+  after you **ask the user to confirm** first. Name the exact file and the line
+  you intend to change before touching anything.  
+  All other files inside `app/framework/ui/navigation/` (sidebar helpers,
+  mega-menus, search, hamburger, etc.) remain read-only unless the user
+  explicitly names them.
+- Everything else under `app/framework/ui/` (buttons, inputs, text, modals,
+  alert, rich-text editor, context providers) is **read-only**. Use the
+  components as-is; do not modify them.
+
+If a task seems to require a change inside a protected path, **STOP and ask the
+user first**, naming the exact file and the change needed. In most cases the
+correct fix lives in project code (`app/components/`, a new page, or
+`app/config/`), not in the framework.
+
+---
+
 ## The golden rules
 
 1. **ALWAYS use the styles defined in `app/config/`.** Every component you build
@@ -20,9 +54,43 @@ styles, not invent new ones.
    user's source of truth. Touch them **only** when the user specifically asks
    you to change a config (e.g. "add a new button variant", "change the primary
    color in theme.ts"). Adding a page should never require editing a config.
-4. **Prefer the existing wrapper components.** They already wire the config in
-   for you (see the table below). Reach for raw `<button>`/`<input>` only when no
-   wrapper fits.
+4. **ALWAYS use the reusable UI components.** When the user asks for any element
+   that maps to one of the reusable components listed below, you **must** use
+   that component — never write a raw `<button>`, `<input>`, etc. in its place.
+   See "Reusable UI components" for the full rules.
+
+---
+
+## Reusable UI components — mandatory use
+
+The framework ships a set of ready-made components under `app/framework/ui/`.
+Whenever the user asks for any element that matches one of these, you **must**
+use the corresponding component. Never substitute a raw HTML element or a
+one-off styled `<div>`.
+
+| When the user asks for… | Use this component | Import path | Key prop |
+| --- | --- | --- | --- |
+| Any button (primary, secondary, delete, nav, …) | `Button` | `@/framework/ui/buttons/Button` | `styleType` |
+| Any text / label with sizing or an icon | `Text` | `@/framework/ui/text/Text` | `size`, `icon` |
+| Any text input / form field | `Input` | `@/framework/ui/input/Input` | `styleType`, `type` |
+| A search box | `SearchInput` | `@/framework/ui/searchInput/SearchInput` | `styleType` |
+| An alert / toast / notification | `Alert` / `useAlert` | `@/framework/ui/Alert`, `@/framework/ui/useAlert` | — |
+| A modal / dialog (absolute-positioned) | `AbsoluteModal` | `@/framework/ui/context/AbsoluteModal` | — |
+| A modal / dialog (fixed/centered) | `FixedModal` | `@/framework/ui/context/FixedModal` | — |
+| A rich-text / WYSIWYG editor | `RichTextEditor` | `@/framework/ui/RichTextEditor` | — |
+
+### Style type doesn't exist? Ask first.
+
+Each component accepts a named `styleType` (or `size` for `Text`). The valid
+names come from the config files (see the table in "The component style configs"
+below). If the user requests a style type that is **not** in the config:
+
+> **STOP. Do not invent a new variant.** Ask the user: *"The style type
+> '[name]' doesn't exist. Did you mean one of [list the existing names]? Or
+> would you like me to add a new variant to the config?"*
+
+Only proceed after the user confirms either an existing name or explicitly asks
+you to add a new one to the config.
 
 ---
 
@@ -116,7 +184,9 @@ that:
 ## Quick checklist before you finish
 
 - [ ] Every color/spacing/shadow/radius comes from `theme.ts` or a component config — no stray literals.
-- [ ] Buttons, text, inputs, search, icons use their wrapper component + a named style type.
+- [ ] Every button, text element, input, search box, alert, or modal uses the corresponding reusable UI component with a valid named style type.
+- [ ] No style type was invented — if the requested type didn't exist, the user was asked first.
 - [ ] Layout is responsive (mobile-first, scales up at breakpoints).
 - [ ] No config file was edited (unless the user explicitly asked).
-- [ ] New code lives outside `app/config/` and outside protected framework paths.
+- [ ] No protected framework path was edited (unless the user explicitly asked, and for Navbar/Footer, confirmation was obtained first).
+- [ ] New code lives in `app/components/`, a new page route, or `app/framework/example/`.
