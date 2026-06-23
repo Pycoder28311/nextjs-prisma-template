@@ -7,38 +7,11 @@ styles, not invent new ones.
 
 ---
 
-## Protected framework paths — DO NOT EDIT
+## Permissions
 
-Treat every path below as read-only vendor code. Reading them to learn how to
-call them is fine and encouraged. Editing them silently is not.
-
-| Path | Rule |
-| --- | --- |
-| `app/framework/data/**` | Read-only. Never edit. |
-| `app/framework/lib/**` | Read-only. Never edit. |
-| `app/framework/types/**` | Read-only. Never edit. |
-| `app/framework/utils/**` | Read-only. Never edit. |
-| `app/framework/ui/**` *(most files)* | Read-only — **except** the two special cases below. |
-| `app/framework/example/**` | **Freely editable.** No restrictions. |
-| `app/api/**` | Read-only. **Ask the user first** before adding or editing anything here, even if a task seems to require it. Name the exact file and change needed and wait for confirmation. |
-
-### Special cases inside `app/framework/ui/`
-
-- **Navbar and Footer** (`app/framework/ui/navigation/Navbar.tsx` and
-  `app/framework/ui/navigation/Footer.tsx`): you **may** edit them, but only
-  after you **ask the user to confirm** first. Name the exact file and the line
-  you intend to change before touching anything.  
-  All other files inside `app/framework/ui/navigation/` (sidebar helpers,
-  mega-menus, search, hamburger, etc.) remain read-only unless the user
-  explicitly names them.
-- Everything else under `app/framework/ui/` (buttons, inputs, text, modals,
-  alert, rich-text editor, context providers) is **read-only**. Use the
-  components as-is; do not modify them.
-
-If a task seems to require a change inside a protected path, **STOP and ask the
-user first**, naming the exact file and the change needed. In most cases the
-correct fix lives in project code (`app/components/`, a new page, or
-`app/config/`), not in the framework.
+See **`instructions/permissions.md`** for the full table of what can and cannot
+be edited, including framework paths, `app/api/`, config files, and the special
+Navbar/Footer confirmation rule.
 
 ---
 
@@ -189,6 +162,5 @@ that:
 - [ ] No style type was invented — if the requested type didn't exist, the user was asked first.
 - [ ] Layout is responsive (mobile-first, scales up at breakpoints).
 - [ ] No config file was edited (unless the user explicitly asked).
-- [ ] No protected framework path was edited (unless the user explicitly asked, and for Navbar/Footer, confirmation was obtained first).
-- [ ] Nothing in `app/api/` was added or edited without explicit user confirmation.
+- [ ] No protected path was edited without permission — see `instructions/permissions.md`.
 - [ ] New code lives in `app/components/`, a new page route, or `app/framework/example/`.
